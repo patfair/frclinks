@@ -66,6 +66,9 @@ sectionRe = re.compile(r'/([iagrt])')
 # Extracts the requested update number.
 updateRe = re.compile(r'/(\d{1,2})')
 
+# Extracts a session code.
+sessionRe = re.compile(r'session=myarea:([A-Za-z0-9]+)')
+
 # Year to default to for event information if none is provided.
 defaultYear = '2012'
 
@@ -240,6 +243,21 @@ class EventTeamListPage(webapp.RequestHandler):
   """
   def get(self):
     event = eventRe.findall(self.request.path)[-1]
+    year = GetYear(self)
+    
+    # Do some special case handling for on/on2 in 2012 because FIRST is broken.
+    if year == '2012' and event == 'on' or event == 'on2':
+      if event == 'on':
+        code = '7641'
+      else:
+        code = '7697'
+
+      eventsPage = urlfetch.fetch('https://my.usfirst.org/myarea/index.lasso?event_type=FRC')
+      session = sessionRe.search(eventsPage.content).group(1)
+      Redir(self, 'https://my.usfirst.org/myarea/index.lasso?page=event_teamlist&eid=' + code +
+                    '&-session=myarea:' + session)
+      return
+
     if event == 'arc':
       event = 'cmp&division=archimedes'
     elif event == 'cur':
@@ -250,7 +268,7 @@ class EventTeamListPage(webapp.RequestHandler):
       event = 'cmp&division=newton'
     Redir(self, 'https://my.usfirst.org/myarea/index.lasso?' +
                   'page=teamlist&event_type=FRC&sort_teams=number' +
-                  '&year=' + GetYear(self) +
+                  '&year=' + year +
                   '&event=' + event)
 
 class EventSchedulePage(webapp.RequestHandler):
