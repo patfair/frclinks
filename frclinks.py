@@ -255,7 +255,7 @@ class EventTeamListPage(webapp.RequestHandler):
       eventsPage = urlfetch.fetch('https://my.usfirst.org/myarea/index.lasso?event_type=FRC')
       session = sessionRe.search(eventsPage.content).group(1)
       Redir(self, 'https://my.usfirst.org/myarea/index.lasso?page=event_teamlist&eid=' + code +
-                    '&-session=myarea:' + session)
+                    '&sort_teams=number&-session=myarea:' + session)
       return
 
     if event == 'arc':
