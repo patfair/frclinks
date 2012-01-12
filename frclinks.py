@@ -100,17 +100,18 @@ championshipYears = {'default':frcUrl + 'content.aspx?id=432',
                      '2004':frcUrl + 'content.aspx?id=9302',
                      '2003':frcUrl + 'content.aspx?id=9304',}
 documentsYears = {'default':frcUrl + 'content.aspx?id=4094',
-                  '2011':frcUrl + 'content.aspx?id=452',  # No separate page yet.
+                  '2012':frcUrl + 'competition-manual-and-related-documents',
+                  '2011':frcUrl + '2011-competition-manual-and-related-documents',
                   '2010':frcUrl + 'content.aspx?id=18068',
                   '2009':frcUrl + 'content.aspx?id=15523',
                   '2008':frcUrl + 'content.aspx?id=9152',
                   '2007':frcUrl + 'content.aspx?id=7430',
                   '2006':frcUrl + 'content.aspx?id=3630',}
-documentsSections = {'i':'01.*?Introduction_',
-                     'a':'02.*?Arena',
-                     'g':'03.*?Game',
-                     'r':'04.*?Robot',
-                     't':'05.*?Tournament',}
+documentsSections = {'i':'30',
+                     'a':'55',
+                     'g':'56',
+                     'r':'57',
+                     't':'58',}
 
 def GetYear(handler):
   endNumber = yearRe.findall(handler.request.path)
@@ -358,10 +359,10 @@ class ChampionshipPage(webapp.RequestHandler):
 
 class ControlSystemPage(webapp.RequestHandler):
   """
-  Redirects the user to the 2010 Control System page.
+  Redirects the user to the 2012 Control System page.
   """
   def get(self):
-    Redir(self, frcUrl + 'content.aspx?id=10934')
+    Redir(self, frcUrl + '2012-kit-of-parts-control-system')
 
 class DocumentsPage(webapp.RequestHandler):
   """
@@ -379,22 +380,15 @@ class DocumentsSectionPage(webapp.RequestHandler):
   Redirects the user to the requested section of the Competition Manual.
   """
   def get(self):
-    year = defaultYear
     sectionNumber = documentsSections[sectionRe.findall(self.request.path)[-1]]
-    documentsPage = urlfetch.fetch(documentsYears.get(year), deadline=10)
-    sectionUrl = re.findall('href="(.*/' + sectionNumber + '.*?)"',
-                            documentsPage.content)[0]
-    if sectionUrl.startswith('http'):
-      Redir(self, sectionUrl)
-    else:
-      Redir(self, 'http://www.usfirst.org' + sectionUrl)
+    Redir(self, 'http://frc-manual.usfirst.org/viewItem/' + sectionNumber)
 
 class UpdatesPage(webapp.RequestHandler):
   """
   Redirects the user to the Team Updates page.
   """
   def get(self):
-    Redir(self, frcUrl + 'content.aspx?id=450')
+    Redir(self, 'http://frc-manual.usfirst.org/TeamUpdates/0')
 
 class UpdateNumberPage(webapp.RequestHandler):
   """
@@ -430,7 +424,7 @@ class QAPage(webapp.RequestHandler):
   Redirects the user to the Q&A forum.
   """
   def get(self):
-    Redir(self, 'http://forums.usfirst.org/forumdisplay.php?f=1465')
+    Redir(self, 'https://frc-qa.usfirst.org/Questions.php')
 
 class NewsPage(webapp.RequestHandler):
   """
@@ -438,6 +432,13 @@ class NewsPage(webapp.RequestHandler):
   """
   def get(self):
     Redir(self, frcUrl + 'emailblastarchive.aspx')
+
+class YouTubePage(webapp.RequestHandler):
+  """
+  Redirects the user to the FRC YouTube channel.
+  """
+  def get(self):
+    Redir(self, 'http://www.youtube.com/user/FRCTeamsGlobal')
 
 class CookiePage(webapp.RequestHandler):
   """
@@ -562,6 +563,8 @@ application = webapp.WSGIApplication([
     (r'/qa?/?', QAPage),
     (r'/news/?', NewsPage),
     (r'/n/?', NewsPage),
+    (r'/youtube/?', YouTubePage),
+    (r'/y/?', YouTubePage),
     (r'/cookie/?', CookiePage),
     (r'/flushnewteams/?', FlushNewTeamsPage),
     (r'/flusholdteams/?', FlushOldTeamsPage),
