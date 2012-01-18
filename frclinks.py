@@ -63,9 +63,6 @@ oldTeamRe = re.compile(r'(\d{4})/(\d+)')
 # Extracts the requested manual section.
 sectionRe = re.compile(r'/([iagrt])')
 
-# Extracts the requested update number.
-updateRe = re.compile(r'/(\d{1,2})')
-
 # Extracts a session code.
 sessionRe = re.compile(r'session=myarea:([A-Za-z0-9]+)')
 
@@ -390,21 +387,6 @@ class UpdatesPage(webapp.RequestHandler):
   def get(self):
     Redir(self, 'http://frc-manual.usfirst.org/TeamUpdates/0')
 
-class UpdateNumberPage(webapp.RequestHandler):
-  """
-  Redirects the user to the Team Updates page.
-  """
-  def get(self):
-    updateNumber = updateRe.findall(self.request.path)[-1]
-    updateFileStr = '[^0-9]0?%d(\(\d\))?\.pdf' % int(updateNumber)
-    updatesPage = urlfetch.fetch(frcUrl + 'content.aspx?id=450', deadline=10)
-    updateMatches = re.findall('href="(.*' + updateFileStr + ')',
-                               urllib.unquote(updatesPage.content))
-    if len(updateMatches) != 1:
-      Redir(self, frcUrl + 'content.aspx?id=450')
-    else :
-      Redir(self, 'http://www.usfirst.org' + updateMatches[0][0])
-
 class BlogPage(webapp.RequestHandler):
   """
   Redirects the user to Bill's Blog.
@@ -555,7 +537,6 @@ application = webapp.WSGIApplication([
     (r'/d/[iagrt]/?', DocumentsSectionPage),
     (r'/updates/?', UpdatesPage),
     (r'/u/?', UpdatesPage),
-    (r'/u/\d{1,2}/?', UpdateNumberPage),
     (r'/blog/?', BlogPage),
     (r'/b/?', BlogPage),
     (r'/forums?/?', ForumsPage),
