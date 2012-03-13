@@ -367,6 +367,13 @@ class DocumentsSectionPage(webapp.RequestHandler):
     sectionNumber = documentsSections[sectionRe.findall(self.request.path)[-1]]
     Redir(self, 'http://frc-manual.usfirst.org/viewItem/' + sectionNumber)
 
+class KitOfPartsPage(webapp.RequestHandler):
+  """
+  Redirects the user to the Kit of Parts page.
+  """
+  def get(self):
+    Redir(self, frcUrl + 'frc-kit-of-parts')
+
 class UpdatesPage(webapp.RequestHandler):
   """
   Redirects the user to the Team Updates page.
@@ -522,6 +529,8 @@ application = webapp.WSGIApplication([
     (r'/d/\d{4}/?', DocumentsPage),
     (r'/d/?', DocumentsPage),
     (r'/d/[iagrt]/?', DocumentsSectionPage),
+    (r'/kitofparts/?', KitOfPartsPage),
+    (r'/k/?', KitOfPartsPage),
     (r'/updates/?', UpdatesPage),
     (r'/u/?', UpdatesPage),
     (r'/blog/?', BlogPage),
