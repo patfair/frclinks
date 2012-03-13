@@ -243,19 +243,6 @@ class EventTeamListPage(webapp.RequestHandler):
     event = eventRe.findall(self.request.path)[-1]
     year = GetYear(self)
     
-    # Do some special case handling for on/on2 in 2012 because FIRST is broken.
-    if year == '2012' and event == 'on' or event == 'on2':
-      if event == 'on':
-        code = '7641'
-      else:
-        code = '7697'
-
-      eventsPage = urlfetch.fetch('https://my.usfirst.org/myarea/index.lasso?event_type=FRC')
-      session = sessionRe.search(eventsPage.content).group(1)
-      Redir(self, 'https://my.usfirst.org/myarea/index.lasso?page=event_teamlist&eid=' + code +
-                    '&sort_teams=number&-session=myarea:' + session)
-      return
-
     if event == 'arc':
       event = 'cmp&division=archimedes'
     elif event == 'cur':
