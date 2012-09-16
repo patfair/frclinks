@@ -26,6 +26,7 @@ pages, event team lists, documents and updates. Intended to compensate for the
 FIRST website's use of non-memorable URLs and lack of ease of navigation.
 """
 
+import json
 import os
 import re
 import urllib
@@ -109,6 +110,20 @@ documentsSections = {'i':'30',
                      'g':'56',
                      'r':'57',
                      't':'58',}
+
+# Pre-compute the event list for the instructions page.
+eventList = json.load(open("events.json"))
+events = []
+for i in xrange(0, (len(eventList) + 1) / 2):
+  row = [eventList[i]['code'], eventList[i]['name']]
+  j = i + (len(eventList) + 1) / 2
+  if j < len(eventList):
+    row.append(eventList[j]['code'])
+    row.append(eventList[j]['name'])
+  else:
+    row.append("&nbsp;")
+    row.append("&nbsp;")
+  events.append(row)
 
 def GetYear(handler):
   endNumber = yearRe.findall(handler.request.path)
@@ -460,7 +475,7 @@ class InstructionPage(webapp.RequestHandler):
   """
   def get(self):
     path = 'templates/instructions.html'
-    self.response.out.write(template.render(path, {}))
+    self.response.out.write(template.render(path, { 'events' : events }))
 
 class RobotsTxtPage(webapp.RequestHandler):
   """
