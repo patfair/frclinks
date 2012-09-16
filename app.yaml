@@ -21,13 +21,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 application: frclinks-hrd
-version: 2
-runtime: python
+version: 3
+runtime: python27
 api_version: 1
+threadsafe: false
 
 handlers:
-- url: /files
-  static_dir: files
-
 - url: /.*
   script: frclinks.py

@@ -38,7 +38,9 @@ POSSIBILITY OF SUCH DAMAGE.
       } catch(err) {}
     </script>
     <script type="text/javascript">
+      {% autoescape off %}
       window.location = "{{ url }}";
+      {% endautoescape %}
     </script>
   </body>
 </html>

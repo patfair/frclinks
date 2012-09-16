@@ -121,8 +121,8 @@ for i in xrange(0, (len(eventList) + 1) / 2):
     row.append(eventList[j]['code'])
     row.append(eventList[j]['name'])
   else:
-    row.append("&nbsp;")
-    row.append("&nbsp;")
+    row.append("")
+    row.append("")
   events.append(row)
 
 def GetYear(handler):
