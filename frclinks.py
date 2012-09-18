@@ -115,10 +115,11 @@ documentsSections = {'i':'30',
 eventList = json.load(open("events.json"))
 events = []
 for i in xrange(0, (len(eventList) + 1) / 2):
-  row = [eventList[i]['code'], eventList[i]['name']]
+  row = [eventList[i]['code'], eventList[i]['old_code'], eventList[i]['name']]
   j = i + (len(eventList) + 1) / 2
   if j < len(eventList):
     row.append(eventList[j]['code'])
+    row.append(eventList[j]['old_code'])
     row.append(eventList[j]['name'])
   else:
     row.append("")

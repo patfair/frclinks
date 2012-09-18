@@ -211,13 +211,24 @@ POSSIBILITY OF SUCH DAMAGE.
       <tr>
         <td colspan='5'><b>FIRST Event Codes</b></td>
       </tr>
+      <tr>
+        <th>Current</th>
+        <th>Pre-2013</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>Current</th>
+        <th>Pre-2013</th>
+        <th>&nbsp;</th>
+      </tr>
       {% for row in events %}
       <tr>
         <td>{{ row.0 }}</td>
         <td>{{ row.1 }}</td>
-        <td>&nbsp;</td>
         <td>{{ row.2 }}</td>
+        <td>&nbsp;</td>
         <td>{{ row.3 }}</td>
+        <td>{{ row.4 }}</td>
+        <td>{{ row.5 }}</td>
       </tr>
       {% endfor %}
     </table>
