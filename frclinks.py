@@ -75,6 +75,8 @@ frcUrl = 'http://www.usfirst.org/roboticsprograms/frc/'
 
 # Mapping of years to year-specific pages.
 regionalYears = {'default':frcUrl + 'regionalevents.aspx?id=430',
+                 '2012':'https://my.usfirst.org/myarea/index.lasso?' +
+                     'event_type=FRC&year=2012&archive=true',
                  '2011':'https://my.usfirst.org/myarea/index.lasso?' +
                      'event_type=FRC&year=2011&archive=true',
                  '2010':'https://my.usfirst.org/myarea/index.lasso?' +
@@ -88,6 +90,7 @@ regionalYears = {'default':frcUrl + 'regionalevents.aspx?id=430',
                  '2006':frcUrl + 'content.aspx?id=4188',
                  '2005':frcUrl + 'content.aspx?id=4388',}
 championshipYears = {'default':frcUrl + 'content.aspx?id=432',
+                     '2012':frcUrl + 'content.aspx?id=432',  # No page exists.
                      '2011':frcUrl + 'content.aspx?id=432',  # No page exists.
                      '2010':frcUrl + 'content.aspx?id=432',  # No page exists.
                      '2009':frcUrl + 'content.aspx?id=14716',
@@ -98,7 +101,8 @@ championshipYears = {'default':frcUrl + 'content.aspx?id=432',
                      '2004':frcUrl + 'content.aspx?id=9302',
                      '2003':frcUrl + 'content.aspx?id=9304',}
 documentsYears = {'default':frcUrl + 'content.aspx?id=4094',
-                  '2012':frcUrl + 'competition-manual-and-related-documents',
+                  '2013':frcUrl + 'competition-manual-and-related-documents',
+                  '2012':frcUrl + '2012-competition-manul-and-related-documents',
                   '2011':frcUrl + '2011-competition-manual-and-related-documents',
                   '2010':frcUrl + 'content.aspx?id=18068',
                   '2009':frcUrl + 'content.aspx?id=15523',
