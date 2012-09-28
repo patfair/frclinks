@@ -406,7 +406,7 @@ class BlogPage(webapp.RequestHandler):
   Redirects the user to Bill's Blog.
   """
   def get(self):
-    Redir(self, 'http://frcdirector.blogspot.com')
+    Redir(self, frcUrl + 'blog')
 
 class ForumsPage(webapp.RequestHandler):
   """
