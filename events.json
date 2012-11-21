@@ -1,7 +1,7 @@
 [
   { "code": "txsa", "old_code": "stx", "name": "Alamo" },
   { "code": "orpo", "old_code": "or", "name": "Autodesk Oregon" },
-  { "code": "nmah", "old_code": "nh", "name": "BAE Granite State" },
+  { "code": "nhma", "old_code": "nh", "name": "BAE Granite State" },
   { "code": "lake", "old_code": "la", "name": "Bayou" },
   { "code": "inwl", "old_code": "in", "name": "Boilermaker" },
   { "code": "mabo", "old_code": "ma", "name": "Boston" },
