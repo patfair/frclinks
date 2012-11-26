@@ -436,6 +436,13 @@ class YouTubePage(webapp.RequestHandler):
   def get(self):
     Redir(self, 'http://www.youtube.com/user/FRCTeamsGlobal')
 
+class TIMSPage(webapp.RequestHandler):
+  """
+  Redirects the FRC Team Information Management System (TIMS).
+  """
+  def get(self):
+    Redir(self, 'https://my.usfirst.org/frc/tims/site.lasso')
+    
 class CookiePage(webapp.RequestHandler):
   """
   ???
@@ -562,6 +569,7 @@ application = webapp.WSGIApplication([
     (r'/n/?', NewsPage),
     (r'/youtube/?', YouTubePage),
     (r'/y/?', YouTubePage),
+    (r'/tims/?', TIMSPage),
     (r'/cookie/?', CookiePage),
     (r'/flushnewteams/?', FlushNewTeamsPage),
     (r'/flusholdteams/?', FlushOldTeamsPage),
