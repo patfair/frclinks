@@ -442,6 +442,13 @@ class TIMSPage(webapp.RequestHandler):
   """
   def get(self):
     Redir(self, 'https://my.usfirst.org/frc/tims/site.lasso')
+
+class KickoffPage(webapp.RequestHandler):
+  """
+  Redirects the user to the FRC Kickoff Page from FIRST
+  """
+  def get(self):
+    Redir(self, frcUrl + 'kickoff')
     
 class CookiePage(webapp.RequestHandler):
   """
@@ -570,6 +577,8 @@ application = webapp.WSGIApplication([
     (r'/youtube/?', YouTubePage),
     (r'/y/?', YouTubePage),
     (r'/tims/?', TIMSPage),
+    (r'/kickoff/?', KickoffPage),
+    (r'/ko/?', KickoffPage),
     (r'/cookie/?', CookiePage),
     (r'/flushnewteams/?', FlushNewTeamsPage),
     (r'/flusholdteams/?', FlushOldTeamsPage),
