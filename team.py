@@ -27,6 +27,7 @@ pages.
 
 import re
 
+from google.appengine.api import memcache
 from google.appengine.api import urlfetch
 from google.appengine.ext import db
 
@@ -58,9 +59,20 @@ def LookupTeam(number):
   '''
   Retrieves the tpid from the current season for a team.
   '''
+  tpid = memcache.get(number, namespace="Team")
+  if tpid == "null":
+    return None
+  if tpid is not None:
+    return tpid
   team = Team.all().filter('number =', int(number)).fetch(1)
   if team:
-    return str(team[0].tpid)
+    tpid = str(team[0].tpid)
+    memcache.add(number, tpid, namespace="Team")
+    return tpid
+
+  # Cache the negative case to prevent spurious datastore lookups for old teams.
+  memcache.add(number, "null", namespace="Team")
+
   return None
 
 def ScrapeTeam(number, year):
@@ -87,6 +99,7 @@ def ScrapeTeam(number, year):
         newTeam.number = int(teamNumber)
         newTeam.tpid = int(teamTpid)
         newTeam.put()
+        memcache.set(teamNumber, teamTpid, namespace="Team")
     if tpid:
       return tpid
     if len(lastPageRe.findall(teamList.content)) == 0:
@@ -100,6 +113,7 @@ def FlushNewTeams():
   query = Team.all()
   entries = query.fetch(500)
   db.delete(entries)
+  memcache.flush_all()
 
 def FlushOldTeams():
   '''
@@ -108,6 +122,7 @@ def FlushOldTeams():
   query = OldTeam.all()
   entries = query.fetch(500)
   db.delete(entries)
+  memcache.flush_all()
 
 def GetOldTeams(year, start):
   '''
@@ -139,9 +154,12 @@ def LookupOldTeamPage(number):
   Retrieves the given team's FIRST info page URL using the year and rank in the
   datastore. Used to circumvent FIRST's requirement of a valid session token.
   '''
-  team = OldTeam.all().filter('number =', int(number)).fetch(1)
+  team = memcache.get(number, namespace="OldTeam")
   if not team:
-    return None
+    team = OldTeam.all().filter('number =', int(number)).fetch(1)
+    if not team:
+      return None
+    memcache.set(number, team, namespace="OldTeam")
 
   teamList = urlfetch.fetch(
       'https://my.usfirst.org/myarea/index.lasso?page=searchresults&' +
