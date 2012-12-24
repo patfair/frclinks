@@ -3,6 +3,7 @@
   { "code": "orpo", "old_code": "or", "name": "Autodesk Oregon" },
   { "code": "nhma", "old_code": "nh", "name": "BAE Granite State" },
   { "code": "lake", "old_code": "la", "name": "Bayou" },
+  { "code": "mibed", "old_code": "", "name": "Bedford FiM" },
   { "code": "inwl", "old_code": "in", "name": "Boilermaker" },
   { "code": "mabo", "old_code": "ma", "name": "Boston" },
   { "code": "njbrg", "old_code": "", "name": "Bridgewater-Raritan MAR" },
