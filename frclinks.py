@@ -438,10 +438,24 @@ class YouTubePage(webapp.RequestHandler):
 
 class TIMSPage(webapp.RequestHandler):
   """
-  Redirects the FRC Team Information Management System (TIMS).
+  Redirects the user to the FRC Team Information Management System (TIMS).
   """
   def get(self):
     Redir(self, 'https://my.usfirst.org/frc/tims/site.lasso')
+
+class STIMSPage(webapp.RequestHandler):
+  """
+  Redirects the user to the Student Team Information Member System (TIMS).
+  """
+  def get(self):
+    Redir(self, 'https://my.usfirst.org/stims/site.lasso')
+
+class VIMSPage(webapp.RequestHandler):
+  """
+  Redirects the user to the Volunteer Information & Matching System (VIMS).
+  """
+  def get(self):
+    Redir(self, 'https://my.usfirst.org/FIRSTPortal/Login/VIMS_Login.aspx')
 
 class KickoffPage(webapp.RequestHandler):
   """
@@ -577,6 +591,8 @@ application = webapp.WSGIApplication([
     (r'/youtube/?', YouTubePage),
     (r'/y/?', YouTubePage),
     (r'/tims/?', TIMSPage),
+    (r'/stims/?', STIMSPage),
+    (r'/vims/?', VIMSPage),
     (r'/kickoff/?', KickoffPage),
     (r'/ko/?', KickoffPage),
     (r'/cookie/?', CookiePage),
