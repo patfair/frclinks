@@ -392,7 +392,7 @@ class KitOfPartsPage(webapp.RequestHandler):
   Redirects the user to the Kit of Parts page.
   """
   def get(self):
-    Redir(self, frcUrl + 'frc-kit-of-parts')
+    Redir(self, frcUrl + 'kit-of-parts')
 
 class UpdatesPage(webapp.RequestHandler):
   """
