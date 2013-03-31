@@ -331,6 +331,17 @@ class EventAwardsPage(webapp.RequestHandler):
     Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
                   + '/awards.html')
 
+class EventAgendaPage(webapp.RequestHandler):
+  """
+  Redirects the user to the public agenda for the given event.
+  """
+  def get(self):
+    year = GetYear(self)
+    event = GetEvent(self)
+
+    Redir(self, 'http://www.usfirst.org/uploadedFiles/Robotics_Programs/FRC/'
+                  + 'Events/%s/%s_%s_Agenda.pdf' % (year, year, event.upper()))
+
 class EventTheBlueAlliancePage(webapp.RequestHandler):
   """
   Redirects the user to the The Blue Alliance page for the given event.
@@ -551,6 +562,10 @@ application = webapp.WSGIApplication([
     (r'/events?/awards/[A-Za-z]+\d?/?', EventAwardsPage),
     (r'/e/a/[A-Za-z]+\d?/\d{4}/?', EventAwardsPage),
     (r'/e/a/[A-Za-z]+\d?/?', EventAwardsPage),
+    (r'/events?/agenda/[A-Za-z]+\d?/\d{4}/?', EventAgendaPage),
+    (r'/events?/agenda/[A-Za-z]+\d?/?', EventAgendaPage),
+    (r'/e/g/[A-Za-z]+\d?/\d{4}/?', EventAgendaPage),
+    (r'/e/g/[A-Za-z]+\d?/?', EventAgendaPage),
     (r'/events?/tba/[A-Za-z]+\d?/\d{4}/?', EventTheBlueAlliancePage),
     (r'/events?/tba/[A-Za-z]+\d?/?', EventTheBlueAlliancePage),
     (r'/e/tba/[A-Za-z]+\d?/\d{4}/?', EventTheBlueAlliancePage),
