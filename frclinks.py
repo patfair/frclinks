@@ -130,6 +130,13 @@ for i in xrange(0, (len(eventList) + 1) / 2):
     row.append("")
   events.append(row)
 
+# Pre-compute the event code translation tables.
+newToOldEventCodes = {}
+oldToNewEventCodes = {}
+for event in eventList:
+  newToOldEventCodes[event['code']] = event['old_code']
+  oldToNewEventCodes[event['old_code']] = event['code']
+
 def GetYear(handler):
   endNumber = yearRe.findall(handler.request.path)
   if len(endNumber) > 0:
@@ -139,6 +146,12 @@ def GetYear(handler):
 
 def GetEvent(handler):
   event = eventRe.findall(handler.request.path)[-1]
+  year = int(GetYear(handler))
+  if year < 2013 and newToOldEventCodes.has_key(event):
+    event = newToOldEventCodes[event]
+  elif year >= 2013 and oldToNewEventCodes.has_key(event):
+    event = oldToNewEventCodes[event]
+
   if event == 'arc':
     event = 'archimedes'
   elif event == 'cur':
@@ -260,16 +273,16 @@ class EventTeamListPage(webapp.RequestHandler):
   Redirects the user to the team list for the given event.
   """
   def get(self):
-    event = eventRe.findall(self.request.path)[-1]
+    event = GetEvent(self)
     year = GetYear(self)
     
-    if event == 'arc':
+    if event == 'archimedes':
       event = 'cmp&division=archimedes'
-    elif event == 'cur':
+    elif event == 'curie':
       event = 'cmp&division=curie'
-    elif event == 'gal':
+    elif event == 'galileo':
       event = 'cmp&division=galileo'
-    elif event == 'new':
+    elif event == 'newton':
       event = 'cmp&division=newton'
     Redir(self, 'https://my.usfirst.org/myarea/index.lasso?' +
                   'page=teamlist&event_type=FRC&sort_teams=number' +
@@ -347,7 +360,17 @@ class EventTheBlueAlliancePage(webapp.RequestHandler):
   Redirects the user to the The Blue Alliance page for the given event.
   """
   def get(self):
-    event = eventRe.findall(self.request.path)[-1]
+    event = GetEvent(self)
+    if event == 'archimedes':
+      event = 'arc'
+    elif event == 'curie':
+      event = 'cur'
+    elif event == 'galileo':
+      event = 'gal'
+    elif event == 'newton':
+      event = 'new'
+    elif event == 'einstein':
+      event = 'ein'
     Redir(self, 'http://www.thebluealliance.com/event/' + GetYear(self) + event)
 
 class RegionalsPage(webapp.RequestHandler):
