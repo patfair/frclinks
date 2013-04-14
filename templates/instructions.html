@@ -83,6 +83,33 @@ POSSIBILITY OF SUCH DAMAGE.
     #eventcodes td:nth-child(3n) {
       padding-right: 2em;
     }
+
+    #suggestion-box-container {
+      position: absolute;
+      border: 1px solid #888;
+      background: #def;
+      border-radius: 0 0 5px 5px;
+      overflow-y: auto;
+    }
+
+    #all-suggestions {
+      width: 100%;
+      margin-bottom: 0;
+      font-size: 0.85rem;
+    }
+
+    #all-suggestions td:nth-child(3) {
+      font-style: italic;
+    }
+
+    .suggestion {
+      cursor: pointer;
+      line-height: 1.6em;
+    }
+
+    .suggestion:hover {
+      background-color: #eff;
+    }
   </style>
 </head>
 
@@ -331,5 +358,175 @@ POSSIBILITY OF SUCH DAMAGE.
   </table>
 
   <p><a href="mailto:admin@frclinks.com">Contact the webmaster</a></p>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var SUGGESTION_BOX_CONTAINER_ID = 'suggestion-box-container';
+      var SUGGESTION_TABLE_ID = 'all-suggestions';
+      var COMMAND_SELECTOR = '#commands tr';
+      var urlEntryBox = document.querySelector('input[name="url"]');
+
+
+      /**
+       * Parse the table of commands to generate a list of objects with
+       * details on the command, any operands it may have, and its meaning.
+       *
+       * @return {Array.<{command: string,
+       *                  minicmd: string,
+       *                  operand: string,
+       *                  meaning: string}>} List of available commands.
+       */
+      function generateCommandList() {
+        var commandTableRows = document.querySelectorAll(COMMAND_SELECTOR);
+        var commandData = [];
+
+        for (var i = 0; i < commandTableRows.length; i++) {
+          var currentRowElements = commandTableRows.item(i).children
+          if (currentRowElements.item(0).tagName === 'TH' ||
+              currentRowElements.length < 4) {
+            continue;
+          }
+          if (currentRowElements.item(0).textContent !== '' ||
+              currentRowElements.item(1).textContent !== '') {
+            commandData.push({
+              command: currentRowElements.item(0).textContent,
+              minicmd: currentRowElements.item(1).textContent,
+              operand: currentRowElements.item(2).textContent,
+              meaning: currentRowElements.item(3).textContent
+            });
+          }
+        }
+
+        return commandData;
+      }
+
+
+      /**
+       * No longer display the suggestion box if it is currently visible
+       */
+      function removeSuggestionBox() {
+        var box = document.getElementById(SUGGESTION_BOX_CONTAINER_ID);
+        if (box) {
+          document.body.removeChild(box);
+        }
+      }
+
+
+      /**
+       * Render a suggestion box with the given list of suggestions.
+       *
+       * @param {HTMLElement} attachTo UI element to attach the box to.
+       * @param {Array.<{command: string,
+       *                 minicmd: string,
+       *                 operand: string,
+       *                 meaning: string}>} The list of relevant suggestions.
+       */
+      function showSuggestionBox(attachTo, suggestions) {
+        var boxBounds = attachTo.getBoundingClientRect();
+        var suggestionBoxElem = document.createElement('div');
+        suggestionBoxElem.id = SUGGESTION_BOX_CONTAINER_ID;
+        suggestionBoxElem.style.top = boxBounds.bottom - 1 + 'px';
+        suggestionBoxElem.style.left = boxBounds.left + 'px';
+        suggestionBoxElem.style.width = boxBounds.width - 2 + 'px';
+        suggestionBoxElem.style.maxHeight = '40%';
+
+        var suggestionTableElem = document.createElement('table');
+        suggestionTableElem.id = SUGGESTION_TABLE_ID;
+        suggestions.forEach(function (cmd) {
+          var cmdRowElem = document.createElement('tr');
+          cmdRowElem.classList.add('suggestion');
+          cmdRowElem.addEventListener('click', function () {
+            urlEntryBox.value = cmd.command !== '' ? cmd.command : cmd.minicmd;
+          });
+          cmdRowElem.innerHTML = '<td>' + cmd.command + '</td>' +
+                                 '<td>' + cmd.minicmd + '</td>' +
+                                 '<td>' + cmd.operand + '</td>' +
+                                 '<td>' + cmd.meaning + '</td>';
+          suggestionTableElem.appendChild(cmdRowElem);
+        });
+        suggestionBoxElem.appendChild(suggestionTableElem);
+
+        var oldElem = document.getElementById(SUGGESTION_BOX_CONTAINER_ID);
+        if (oldElem) {
+          document.body.replaceChild(suggestionBoxElem, oldElem);
+        } else {
+          document.body.appendChild(suggestionBoxElem);
+        }
+      }
+
+
+      var commandList = generateCommandList();
+
+      urlEntryBox.addEventListener('blur', function () {
+        setTimeout(removeSuggestionBox, 100);
+      });
+
+      urlEntryBox.addEventListener('focus', function () {
+        urlEntryBox.dispatchEvent(new CustomEvent('keyup'));
+      });
+
+      urlEntryBox.addEventListener('keyup', function () {
+        var typedSoFar = urlEntryBox.value;
+        if (typedSoFar.length < 2) {  // Too short to autocomplete.
+          removeSuggestionBox();
+          return;
+        }
+
+        var inputRE = RegExp('^' + typedSoFar);
+        var matchingCommands = commandList.filter(function (cmd) {
+          return (inputRE.test(cmd.command) || inputRE.test(cmd.minicmd));
+        });
+
+        if (matchingCommands.length === 0) {
+          removeSuggestionBox();
+        } else {
+          showSuggestionBox(urlEntryBox, matchingCommands);
+        }
+      });
+
+      urlEntryBox.addEventListener('keydown', function (keyEvent) {
+        if (keyEvent.keyCode === 9) {  // Tab key
+          keyEvent.preventDefault();
+          var inputRE = RegExp('^' + urlEntryBox.value);
+          var longestPrefix = commandList.reduce(function (commonPrefix, cmd) {
+            var curCmd = '';
+            if (inputRE.test(cmd.command)) {
+              curCmd = cmd.command;
+            } else if (inputRE.test(cmd.minicmd)) {
+              curCmd = cmd.minicmd;
+            } else {
+              return commonPrefix;
+            }
+
+            if (commonPrefix === null) {
+              commonPrefix = curCmd;
+            } else {
+              var currentMatch = '';
+              for (var i = 0;
+                   i < Math.min(commonPrefix.length, curCmd.length);
+                   i++) {
+                if (commonPrefix[i] === curCmd[i]) {
+                  currentMatch += curCmd[i];
+                } else {
+                  break;
+                }
+              }
+              if (currentMatch.length < commonPrefix.length) {
+                commonPrefix = currentMatch;
+              }
+            }
+            return commonPrefix;
+          }, null);
+          if (longestPrefix !== null) {
+            urlEntryBox.value = longestPrefix;
+            urlEntryBox.dispatchEvent(new CustomEvent('keyup'));
+          }
+        }
+      });
+
+    })();
+  </script>
 
 </body>
