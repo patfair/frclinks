@@ -20,248 +20,316 @@ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
 IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-{% endcomment %}<?xml version="1.0" encoding="utf-8"?> 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-  <head>
-    <title>Usage Instructions</title>
-    <style type="text/css"> 
-      td, th {
-        text-align: left;
-        padding: 1px 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <form onsubmit='window.location = this.url.value; return false;' action='GET'>
-      <div>
-        <input type='text' name='url' />
-        <input type='submit' value='Go' />
-      </div>
-    </form>
-    <p>Usage instructions: <b>frclinks.com</b> +</p>
-    <table>
-      <tr>
-        <th><p>Command</p></th>
-        <th><p>Short form</p></th>
-        <th><p>Operand(s)</p></th>
-        <th><p>Go to the...</p></th>
-      </tr>
-      <tr>
-        <td><b>/team</b></td>
-        <td><b>/t</b></td>
-        <td>&nbsp;</td>
-        <td>list of all registered FRC teams.</td>
-      </tr>
-      <tr>
-        <td><b>/team/</b></td>
-        <td><b>/t/</b></td>
-        <td><i>team number</i></td>
-        <td>FIRST information page for the given team.</td>
-      </tr>
-      <tr>
-        <td><b>/team/</b></td>
-        <td><b>/t/</b></td>
-        <td><i>area id/[year]</i></td>
-        <td>team list for the given area ID (e.g. CA-USA, ON-Canada).</td>
-      </tr>
-      <tr>
-        <td><b>/website/</b></td>
-        <td><b>/w/</b></td>
-        <td><i>team number</i></td>
-        <td>website of the given team.</td>
-      </tr>
-      <tr>
-        <td><b>/tba/</b></td>
-        <td><b>/tba/</b></td>
-        <td><i>team number</i></td>
-        <td>Blue Alliance page for the given team.</td>
-      </tr>
-      <tr>
-        <td><b>/cdm/</b></td>
-        <td><b>/cdm/</b></td>
-        <td><i>team number</i></td>
-        <td>Chief Delphi Media page for photos tagged with the given team.</td>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      </tr>
-      <tr>
-        <td><b>/event/</b></td>
-        <td><b>/e/</b></td>
-        <td><i>event id/[year]</i></td>
-        <td>team list for the given event ID (see below for codes).</td>
-      </tr>
-      <tr>
-        <td><b>/event/schedule/</b></td>
-        <td><b>/e/s/</b></td>
-        <td><i>event id/[year]</i></td>
-        <td>qualification match schedule for the given event ID (see below for codes).</td>
-      </tr>
-      <tr>
-        <td><b>/event/matchresults/</b></td>
-        <td><b>/e/m/</b></td>
-        <td><i>event id/[year]</i></td>
-        <td>qualification match results for the given event ID (see below for codes).</td>
-      </tr>
-      <tr>
-        <td><b>/event/rankings/</b></td>
-        <td><b>/e/r/</b></td>
-        <td><i>event id/[year]</i></td>
-        <td>rankings for the given event ID (see below for codes).</td>
-      </tr>
-      <tr>
-        <td><b>/event/awards/</b></td>
-        <td><b>/e/a/</b></td>
-        <td><i>event id/[year]</i></td>
-        <td>awards for the given event ID (see below for codes).</td>
-      </tr>
-      <tr>
-        <td><b>/event/agenda/</b></td>
-        <td><b>/e/g/</b></td>
-        <td><i>event id/[year]</i></td>
-        <td>agenda for the given event ID (see below for codes).</td>
-      </tr>
-      <tr>
-        <td><b>/event/tba/</b></td>
-        <td><b>/e/tba/</b></td>
-        <td><i>event id/[year]</i></td>
-        <td>Blue Alliance page for the given event ID (see below for codes).</td>
-      </tr>
-      <tr>
-        <td><b>/championship</b></td>
-        <td><b>/c</b></td>
-        <td><i>/[year]</i></td>
-        <td>Championship Event page.</td>
-      </tr>
-      <tr>
-        <td><b>/regionals</b></td>
-        <td><b>/r</b></td>
-        <td><i>/[year]</i></td>
-        <td>Regional Events page.</td>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      </tr>
-      <tr>
-        <td><b>/controlsystem</b></td>
-        <td><b>/cs</b></td>
-        <td>&nbsp;</td>
-        <td>2009-present Control System page.</td>
-      </tr>
-      <tr>
-        <td><b>/documents</b></td>
-        <td><b>/d</b></td>
-        <td><i>/[year]</i></td>
-        <td>Competition Manual page.</td>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td><b>/d/i</b><br/><b>/d/a</b><br/><b>/d/g</b><br/><b>/d/r</b><br/><b>/d/t</b></td>
-        <td>&nbsp;</td>
-        <td><b>I</b>ntroduction,<br/><b>A</b>rena,<br/><b>G</b>ame,<br/><b>R</b>obot or<br/>
-          <b>T</b>ournament section of the Competition Manual.</td>
-      </tr>
-      <tr>
-        <td><b>/kitofparts</b></td>
-        <td><b>/k</b></td>
-        <td>&nbsp;</td>
-        <td>Kit of Parts page.</td>
-      </tr>
-      <tr>
-        <td><b>/updates</b></td>
-        <td><b>/u</b></td>
-        <td>&nbsp;</td>
-        <td>Team Updates page.</td>
-      </tr>
-      <tr>
-        <td><b>/blog</b></td>
-        <td><b>/b</b></td>
-        <td>&nbsp;</td>
-        <td>Bill's Blog.</td>
-      </tr>
-      <tr>
-        <td><b>/forums</b></td>
-        <td><b>/f</b></td>
-        <td>&nbsp;</td>
-        <td>FIRST forums.</td>
-      </tr>
-      <tr>
-        <td><b>/qa</b></td>
-        <td><b>/q</b></td>
-        <td>&nbsp;</td>
-        <td>Q&amp;A forum.</td>
-      </tr>
-      <tr>
-        <td><b>/news</b></td>
-        <td><b>/n</b></td>
-        <td>&nbsp;</td>
-        <td>FRC news page. </td>
-      </tr>
-      <tr>
-        <td><b>/tims</b></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>FRC TIMS login page. </td>
-      </tr>
-      <tr>
-        <td><b>/stims</b></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>STIMS login page. </td>
-      </tr>
-      <tr>
-        <td><b>/vims</b></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>VIMS login page. </td>
-      </tr>
-      <tr>
-        <td><b>/kickoff</b></td>
-        <td><b>/ko</b></td>
-        <td>&nbsp;</td>
-        <td>FRC Kickoff page.</td>
-      </tr>
-      <tr>
-        <td><b>/youtube</b></td>
-        <td><b>/y</b></td>
-        <td>&nbsp;</td>
-        <td>FRC YouTube channel. </td>
-      </tr>
-    </table>
-    <p>&nbsp;</p>
-    <table>
-      <tr>
-        <td colspan='5'><b>FIRST Event Codes</b></td>
-      </tr>
-      <tr>
-        <th>Current</th>
-        <th>Pre-2013</th>
-        <th>&nbsp;</th>
-        <th>&nbsp;</th>
-        <th>Current</th>
-        <th>Pre-2013</th>
-        <th>&nbsp;</th>
-      </tr>
-      {% for row in events %}
-      <tr>
-        <td>{{ row.0 }}</td>
-        <td>{{ row.1 }}</td>
-        <td>{{ row.2 }}</td>
-        <td>&nbsp;</td>
-        <td>{{ row.3 }}</td>
-        <td>{{ row.4 }}</td>
-        <td>{{ row.5 }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-    <p><a href="mailto:admin@frclinks.com">Contact the webmaster</a></p>
-  </body>
-</html>
+{% endcomment %}
+
+<!doctype html>
+
+<head>
+  <title>FRCLinks Usage Instructions</title>
+  <style>
+    body {
+      text-align: center;
+    }
+
+    form {
+      border-radius: 5px;
+      background-color: #def;
+      display: inline-block;
+      max-width:80%;
+      padding: 0.75rem 0;
+    }
+
+    input[type="text"] {
+      width: 35em;
+      max-width:80%;
+      height: 1.8em;
+      border-radius: 3px;
+      font-size: 1.1em;
+    }
+
+    input[type="submit"] {
+      height: 2em;
+      border-radius: 3px;
+      font-size: 1.1em;
+    }
+
+    table {
+      margin: 0 auto 4em auto;
+      text-align: left;
+      line-height: 1.4em;
+    }
+
+    tr:nth-child(2n) {
+      background: #def;
+    }
+
+    th {
+      padding-bottom: 1em;
+    }
+
+    th, td {
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+    }
+
+    #commands td:nth-child(1), #commands td:nth-child(2) {
+      font-weight: bold;
+    }
+
+    #commands td:nth-child(3) {
+      font-style: italic;
+    }
+
+    #eventcodes td:nth-child(3n) {
+      padding-right: 2em;
+    }
+  </style>
+</head>
+
+<body>
+  <form onsubmit="window.location = this.url.value; return false;" action="GET">
+    <input type="text" name="url" />
+    <input type="submit" value="Go" />
+  </form>
+
+  <p>Usage instructions: <b>frclinks.com</b> +
+  <table id="commands">
+    <tr>
+      <th>Command</th>
+      <th>Short form</th>
+      <th>Operand(s)</th>
+      <th>Go to the...</th>
+    </tr>
+    <tr>
+      <td>/team</td>
+      <td>/t</td>
+      <td></td>
+      <td>List of all registered FRC teams.</td>
+    </tr>
+    <tr>
+      <td>/team/</td>
+      <td>/t/</td>
+      <td>team number</td>
+      <td>FIRST information page for the given team.</td>
+    </tr>
+    <tr>
+      <td>/team/</td>
+      <td>/t/</td>
+      <td>area id/[year]</td>
+      <td>Team list for the given area ID (e.g. CA-USA, ON-Canada).</td>
+    </tr>
+    <tr>
+      <td>/website/</td>
+      <td>/w/</td>
+      <td>team number</td>
+      <td>Website of the given team.</td>
+    </tr>
+    <tr>
+      <td>/tba/</td>
+      <td>/tba/</td>
+      <td>team number</td>
+      <td>Blue Alliance page for the given team.</td>
+    </tr>
+    <tr>
+      <td>/cdm/</td>
+      <td></td>
+      <td>team number</td>
+      <td>Chief Delphi Media page for photos tagged with the given team.</td>
+    </tr>
+    <tr>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+    <tr>
+      <td>/event/</td>
+      <td>/e/</td>
+      <td>event id/[year]</td>
+      <td>Team list for the given event ID (see below for codes).</td>
+    </tr>
+    <tr>
+      <td>/event/schedule/</td>
+      <td>/e/s/</td>
+      <td>event id/[year]</td>
+      <td>Qualification match schedule for the given event ID
+          (see below for codes).</td>
+    </tr>
+    <tr>
+      <td>/event/matchresults/</td>
+      <td>/e/m/</td>
+      <td>event id/[year]</td>
+      <td>Qualification match results for the given event ID
+          (see below for codes).</td>
+    </tr>
+    <tr>
+      <td>/event/rankings/</td>
+      <td>/e/r/</td>
+      <td>event id/[year]</td>
+      <td>Rankings for the given event ID (see below for codes).</td>
+    </tr>
+    <tr>
+      <td>/event/awards/</td>
+      <td>/e/a/</td>
+      <td>event id/[year]</td>
+      <td>Awards for the given event ID (see below for codes).</td>
+    </tr>
+    <tr>
+      <td>/event/agenda/</td>
+      <td>/e/g/</td>
+      <td>event id/[year]</td>
+      <td>Agenda for the given event ID (see below for codes).</td>
+    </tr>
+    <tr>
+      <td>/event/tba/</td>
+      <td>/e/tba/</td>
+      <td>event id/[year]</td>
+      <td>Blue Alliance page for the given event ID (see below for codes).</td>
+    </tr>
+    <tr>
+      <td>/championship</td>
+      <td>/c</td>
+      <td>/[year]</td>
+      <td>Championship Event page.</td>
+    </tr>
+    <tr>
+      <td>/regionals</td>
+      <td>/r</td>
+      <td>/[year]</td>
+      <td>Regional Events page.</td>
+    </tr>
+    <tr>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+    <tr>
+      <td>/controlsystem</td>
+      <td>/cs</td>
+      <td></td>
+      <td>2009-present Control System page.</td>
+    </tr>
+    <tr>
+      <td>/documents</td>
+      <td>/d</td>
+      <td>/[year]</td>
+      <td>Competition Manual page.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>/d/i</td>
+      <td></td>
+      <td><b>I</b>ntroduction</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>/d/a</td>
+      <td></td>
+      <td><b>A</b>rena</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>/d/g</td>
+      <td></td>
+      <td><b>G</b>ame</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>/d/r</td>
+      <td></td>
+      <td><b>R</b>obot, or,</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>/d/t</td>
+      <td></td>
+      <td><b>T</b>ournament section of the Competition Manual.</td>
+    </tr>
+    <tr>
+      <td>/kitofparts</td>
+      <td>/k</td>
+      <td></td>
+      <td>Kit of Parts page.</td>
+    </tr>
+    <tr>
+      <td>/updates</td>
+      <td>/u</td>
+      <td></td>
+      <td>Team Updates page.</td>
+    </tr>
+    <tr>
+      <td>/blog</td>
+      <td>/b</td>
+      <td></td>
+      <td>Bill's Blog.</td>
+    </tr>
+    <tr>
+      <td>/forums</td>
+      <td>/f</td>
+      <td></td>
+      <td>FIRST forums.</td>
+    </tr>
+    <tr>
+      <td>/qa</td>
+      <td>/q</td>
+      <td></td>
+      <td>Q&amp;A forum.</td>
+    </tr>
+    <tr>
+      <td>/news</td>
+      <td>/n</td>
+      <td></td>
+      <td>FRC news page. </td>
+    </tr>
+    <tr>
+      <td>/tims</td>
+      <td></td>
+      <td></td>
+      <td>FRC TIMS login page. </td>
+    </tr>
+    <tr>
+      <td>/stims</td>
+      <td></td>
+      <td></td>
+      <td>STIMS login page. </td>
+    </tr>
+    <tr>
+      <td>/vims</td>
+      <td></td>
+      <td></td>
+      <td>VIMS login page. </td>
+    </tr>
+    <tr>
+      <td>/kickoff</td>
+      <td>/ko</td>
+      <td></td>
+      <td>FRC Kickoff page.</td>
+    </tr>
+    <tr>
+      <td>/youtube</td>
+      <td>/y</td>
+      <td></td>
+      <td>FRC YouTube channel. </td>
+    </tr>
+  </table>
+
+  <p><b>FIRST Event Codes</b></p>
+  <table id="eventcodes">
+    <tr>
+      <th>Current</th>
+      <th>Pre-2013</th>
+      <th></th>
+      <th>Current</th>
+      <th>Pre-2013</th>
+      <th></th>
+    </tr>
+    {% for row in events %}
+    <tr>
+      <td>{{ row.0 }}</td>
+      <td>{{ row.1 }}</td>
+      <td>{{ row.2 }}</td>
+      <td>{{ row.3 }}</td>
+      <td>{{ row.4 }}</td>
+      <td>{{ row.5 }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <p><a href="mailto:admin@frclinks.com">Contact the webmaster</a></p>
+
+</body>
