@@ -109,11 +109,6 @@ documentsYears = {'default':frcUrl + 'content.aspx?id=4094',
                   '2008':frcUrl + 'content.aspx?id=9152',
                   '2007':frcUrl + 'content.aspx?id=7430',
                   '2006':frcUrl + 'content.aspx?id=3630',}
-documentsSections = {'i':'30',
-                     'a':'55',
-                     'g':'56',
-                     'r':'57',
-                     't':'58',}
 
 # Pre-compute the event list for the instructions page.
 eventList = json.load(open("events.json"))
@@ -413,14 +408,6 @@ class DocumentsPage(webapp.RequestHandler):
     else:
       Redir(self, documentsYears.get('default'))
 
-class DocumentsSectionPage(webapp.RequestHandler):
-  """
-  Redirects the user to the requested section of the Competition Manual.
-  """
-  def get(self):
-    sectionNumber = documentsSections[sectionRe.findall(self.request.path)[-1]]
-    Redir(self, 'http://frc-manual.usfirst.org/viewItem/' + sectionNumber)
-
 class KitOfPartsPage(webapp.RequestHandler):
   """
   Redirects the user to the Kit of Parts page.
@@ -614,7 +601,6 @@ application = webapp.WSGIApplication([
     (r'/docs/?', DocumentsPage),
     (r'/d/\d{4}/?', DocumentsPage),
     (r'/d/?', DocumentsPage),
-    (r'/d/[iagrt]/?', DocumentsSectionPage),
     (r'/kitofparts/?', KitOfPartsPage),
     (r'/k/?', KitOfPartsPage),
     (r'/updates/?', UpdatesPage),
