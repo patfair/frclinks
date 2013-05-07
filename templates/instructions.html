@@ -439,12 +439,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
       urlEntryBox.addEventListener('keyup', function () {
         var typedSoFar = urlEntryBox.value;
-        if (typedSoFar.length < 2) {  // Too short to autocomplete.
+        if (typedSoFar.length < 1) {  // Too short to autocomplete.
           removeSuggestionBox();
           return;
         }
 
-        var inputRE = RegExp('^' + typedSoFar);
+        var inputRE = RegExp('^/?' + typedSoFar);
         var matchingCommands = commandList.filter(function (cmd) {
           return (inputRE.test(cmd.command) || inputRE.test(cmd.minicmd));
         });
