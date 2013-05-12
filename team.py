@@ -34,26 +34,13 @@ from google.appengine.ext import db
 # Separates tpids on the FIRST list of all teams.
 teamRe = re.compile(r'tpid=(\d+)[A-Za-z0-9=&;\-:]*?"><b>(\d+)')
 
-# Extracts the link to the next page of results on the FIRST list of all teams.
-lastPageRe = re.compile(r'Next ->')
-
-# Extracts the FIRST team info page URL on the FIRST list of all teams.
-oldTeamPageRe = re.compile(r'\?page=team_details[A-Za-z0-9=&;\-:]*')
-
-class Team(db.Model):
+class TeamTpid(db.Model):
   '''
-  Stores a team number->tpid relationship for the current season.
+  Stores a team number->tpid relationship for the most recent season the team was active.
   '''
   number = db.IntegerProperty()
   tpid = db.IntegerProperty()
-
-class OldTeam(db.Model):
-  '''
-  Stores a team number->list rank relationship for a past season.
-  '''
-  number = db.IntegerProperty()
   year = db.IntegerProperty()
-  rank = db.IntegerProperty()
 
 def LookupTeam(number):
   '''
@@ -64,7 +51,7 @@ def LookupTeam(number):
     return None
   if tpid is not None:
     return tpid
-  team = Team.all().filter('number =', int(number)).fetch(1)
+  team = TeamTpid.all().filter('number =', int(number)).fetch(1)
   if team:
     tpid = str(team[0].tpid)
     memcache.add(number, tpid, namespace="Team")
@@ -82,90 +69,52 @@ def ScrapeTeam(number, year):
   '''
   skip = 0
   while 1:
-    teamList = urlfetch.fetch(
-        'https://my.usfirst.org/myarea/index.lasso?page=searchresults&' +
-        'programs=FRC&reports=teams&sort_teams=number&results_size=250&' +
-        'omit_searchform=1&season_FRC=' + year + '&skip_teams=' + str(skip),
-        deadline=10)
-    teamResults = teamRe.findall(teamList.content)
-    tpid = None
-    for teamResult in teamResults:
-      teamNumber = teamResult[1]
-      teamTpid = teamResult[0]
-      if teamNumber == number:
-        tpid = teamTpid
-      if Team.all().filter('number =', int(teamNumber)).count() == 0:
-        newTeam = Team()
-        newTeam.number = int(teamNumber)
-        newTeam.tpid = int(teamTpid)
-        newTeam.put()
-        memcache.set(teamNumber, teamTpid, namespace="Team")
-    if tpid:
+    scrapeDone = ScrapeTeams(year, skip)
+    tpid = memcache.get(number, namespace="Team")
+    if tpid and tpid != "null":
       return tpid
-    if len(lastPageRe.findall(teamList.content)) == 0:
+    if scrapeDone:
       return None
     skip += 250
 
-def FlushNewTeams():
+def ScrapeTeams(year, start):
   '''
-  Deletes 500 teams at a time from the datastore (Google limit).
+  Searches one page of the FIRST list of all teams for the given season, caching
+  the tpid of all teams not already cached in the datastore. Returns true if
+  there are no more pages of teams to scrape after this one.
   '''
-  query = Team.all()
-  entries = query.fetch(500)
-  db.delete(entries)
-  memcache.flush_all()
-
-def FlushOldTeams():
-  '''
-  Deletes 500 teams at a time from the datastore (Google limit).
-  '''
-  query = OldTeam.all()
-  entries = query.fetch(500)
-  db.delete(entries)
-  memcache.flush_all()
-
-def GetOldTeams(year, start):
-  '''
-  Searches the FIRST list of all teams for the given past season, caching the
-  list rank of all teams not already cached in the datastore.
-  '''
-  rank = int(start)
   teamList = urlfetch.fetch(
       'https://my.usfirst.org/myarea/index.lasso?page=searchresults&' +
       'programs=FRC&reports=teams&sort_teams=number&results_size=250&' +
-      'omit_searchform=1&season_FRC=' + year + '&skip_teams=' + str(rank),
+      'omit_searchform=1&season_FRC=' + year + '&skip_teams=' + str(start),
       deadline=10)
   teamResults = teamRe.findall(teamList.content)
   for teamResult in teamResults:
     teamNumber = int(teamResult[1])
-    teamCheck = Team.all().filter('number =', teamNumber).fetch(1)
-    if not teamCheck:
-      oldTeamCheck = OldTeam.all().filter('number =', teamNumber).fetch(1)
-      if not oldTeamCheck:
-        oldTeam = OldTeam()
-        oldTeam.number = teamNumber
-        oldTeam.year = int(year)
-        oldTeam.rank = rank
-        oldTeam.put()
-    rank += 1
+    teamTpid = teamResult[0]
+    teamQuery = TeamTpid.all().filter('number =', int(teamNumber))
+    if teamQuery.count() == 0:
+      # Insert a new record for the team.
+      newTeam = TeamTpid()
+      newTeam.number = int(teamNumber)
+      newTeam.tpid = int(teamTpid)
+      newTeam.year = int(year)
+      newTeam.put()
+      memcache.set(str(teamNumber), teamTpid, namespace="Team")
+    elif teamQuery.filter('year <', int(year)).count() != 0:
+      # Updated the existing team record if this tpid is more recent.
+      team = teamQuery.fetch(1)[0]
+      team.tpid = int(teamTpid)
+      team.year = int(year)
+      team.put()
+      memcache.set(str(teamNumber), teamTpid, namespace="Team")
+  return len(teamResults) < 250
 
-def LookupOldTeamPage(number):
+def FlushTeams():
   '''
-  Retrieves the given team's FIRST info page URL using the year and rank in the
-  datastore. Used to circumvent FIRST's requirement of a valid session token.
+  Deletes 500 teams at a time from the datastore (Google limit).
   '''
-  team = memcache.get(number, namespace="OldTeam")
-  if not team:
-    team = OldTeam.all().filter('number =', int(number)).fetch(1)
-    if not team:
-      return None
-    memcache.set(number, team, namespace="OldTeam")
-
-  teamList = urlfetch.fetch(
-      'https://my.usfirst.org/myarea/index.lasso?page=searchresults&' +
-      'programs=FRC&reports=teams&sort_teams=number&results_size=1&' +
-      'omit_searchform=1&season_FRC=' + str(team[0].year) + '&skip_teams=' +
-      str(team[0].rank),
-      deadline=10)
-  teamPageUrl = oldTeamPageRe.findall(teamList.content)[0].replace('&amp;', '&')
-  return 'https://my.usfirst.org/myarea/index.lasso' + teamPageUrl
+  query = TeamTpid.all()
+  entries = query.fetch(500)
+  db.delete(entries)
+  memcache.flush_all()

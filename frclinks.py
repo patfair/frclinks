@@ -36,12 +36,10 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-from team import FlushNewTeams
-from team import FlushOldTeams
-from team import GetOldTeams
-from team import LookupOldTeamPage
+from team import FlushTeams
 from team import LookupTeam
 from team import ScrapeTeam
+from team import ScrapeTeams
 
 # Extracts the team number from the end of the URL.
 numberRe = re.compile(r'\d+')
@@ -56,10 +54,10 @@ eventRe = re.compile(r'[A-Za-z]+\d?')
 yearRe = re.compile(r'\d{4}')
 
 # Extracts the team webpage from the FIRST team info page.
-websiteRe = re.compile(r'href="http://[A-Za-z0-9\.\-_/#]+')
+websiteRe = re.compile(r'Team Website:.*href="(http://[A-Za-z0-9\.\-_/#]+)')
 
-# Extracts old team scrape parameters.
-oldTeamRe = re.compile(r'(\d{4})/(\d+)')
+# Extracts team scrape parameters.
+scrapeTeamsRe = re.compile(r'(\d{4})/(\d+)')
 
 # Extracts the requested manual section.
 sectionRe = re.compile(r'/([iagrt])')
@@ -162,22 +160,15 @@ def GetEvent(handler):
 def GetTeamPageUrl(handler):
     team = numberRe.findall(handler.request.path)[-1]
 
-    # First, try checking the datastore for the current season`s tpid. 
+    # Try checking the datastore for the team's most recent tpid.
     tpid = LookupTeam(team)
-    if tpid:
-      return ('https://my.usfirst.org/myarea/index.lasso?page=team_details' +
-                    '&tpid=' + tpid)
 
-    # Second, try checking the datastore for a past season`s URL.
-    teamPageUrl = LookupOldTeamPage(team)
-    if teamPageUrl:
-      return teamPageUrl
+    if not tpid:
+      # Otherwise, try scraping the FIRST website for the current season's tpid.
+      tpid = ScrapeTeam(team, defaultYear)
 
-    # Third, try scraping the FIRST website for the current season`s tpid.
-    tpid = ScrapeTeam(team, defaultYear)
     if tpid:
-      return ('https://my.usfirst.org/myarea/index.lasso?page=team_details' +
-                    '&tpid=' + tpid)
+      return ('http://www.usfirst.org/whats-going-on/team/FRC/' + tpid)
 
     return None
 
@@ -236,7 +227,7 @@ class TeamWebsitePage(webapp.RequestHandler):
         path = 'templates/no_website.html'
         self.response.out.write(template.render(path, template_values))
       else:
-        Redir(self, website[0][6:])
+        Redir(self, website[0])
 
 class TeamTheBlueAlliancePage(webapp.RequestHandler):
   """
@@ -492,34 +483,24 @@ class CookiePage(webapp.RequestHandler):
   def get(self):
     Redir(self, 'http://www.chiefdelphi.com/media/photos/33801')
 
-class FlushNewTeamsPage(webapp.RequestHandler):
+class FlushTeamsPage(webapp.RequestHandler):
   """
   Deletes 500 teams at a time from the datastore (Google limit).
   Unlisted on the instructions page; intended for admin use.
   """
   def get(self):
-    FlushNewTeams()
+    FlushTeams()
     path = 'templates/instructions.html'
     self.response.out.write(template.render(path, {}))
 
-class FlushOldTeamsPage(webapp.RequestHandler):
-  """
-  Deletes 500 teams at a time from the datastore (Google limit).
-  Unlisted on the instructions page; intended for admin use.
-  """
-  def get(self):
-    FlushOldTeams()
-    path = 'templates/instructions.html'
-    self.response.out.write(template.render(path, {}))
-
-class GetOldTeamsPage(webapp.RequestHandler):
+class ScrapeTeamsPage(webapp.RequestHandler):
   """
   Retrieves and caches teams from the given year in the datastore.
   Unlisted on the instructions page; intended for admin use.
   """
   def get(self):
-    oldTeamMatch = oldTeamRe.findall(self.request.path)
-    GetOldTeams(oldTeamMatch[-1][0], oldTeamMatch[-1][1])
+    scrapeTeamsMatch = scrapeTeamsRe.findall(self.request.path)
+    ScrapeTeams(scrapeTeamsMatch[-1][0], scrapeTeamsMatch[-1][1])
     path = 'templates/instructions.html'
     self.response.out.write(template.render(path, {}))
 
@@ -620,9 +601,8 @@ application = webapp.WSGIApplication([
     (r'/kickoff/?', KickoffPage),
     (r'/ko/?', KickoffPage),
     (r'/cookie/?', CookiePage),
-    (r'/flushnewteams/?', FlushNewTeamsPage),
-    (r'/flusholdteams/?', FlushOldTeamsPage),
-    (r'/getoldteams/\d{4}/\d+/?', GetOldTeamsPage),
+    (r'/flushteams/?', FlushTeamsPage),
+    (r'/scrapeteams/\d{4}/\d+/?', ScrapeTeamsPage),
     (r'/robots.txt', RobotsTxtPage),
     ('.*', InstructionPage),
   ],
