@@ -459,7 +459,7 @@ POSSIBILITY OF SUCH DAMAGE.
       urlEntryBox.addEventListener('keydown', function (keyEvent) {
         if (keyEvent.keyCode === 9) {  // Tab key
           keyEvent.preventDefault();
-          var inputRE = RegExp('^' + urlEntryBox.value);
+          var inputRE = RegExp('^/?' + urlEntryBox.value);
           var longestPrefix = commandList.reduce(function (commonPrefix, cmd) {
             var curCmd = '';
             if (inputRE.test(cmd.command)) {
