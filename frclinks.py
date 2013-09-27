@@ -66,13 +66,15 @@ sectionRe = re.compile(r'/([iagrt])')
 sessionRe = re.compile(r'session=myarea:([A-Za-z0-9]+)')
 
 # Year to default to for event information if none is provided.
-defaultYear = '2013'
+defaultYear = '2014'
 
 # Base url for many FRC pages.
 frcUrl = 'http://www.usfirst.org/roboticsprograms/frc/'
 
 # Mapping of years to year-specific pages.
 regionalYears = {'default':frcUrl + 'regionalevents.aspx?id=430',
+                 '2013':'https://my.usfirst.org/myarea/index.lasso?' +
+                     'event_type=FRC&year=2013&archive=true',
                  '2012':'https://my.usfirst.org/myarea/index.lasso?' +
                      'event_type=FRC&year=2012&archive=true',
                  '2011':'https://my.usfirst.org/myarea/index.lasso?' +
@@ -88,6 +90,7 @@ regionalYears = {'default':frcUrl + 'regionalevents.aspx?id=430',
                  '2006':frcUrl + 'content.aspx?id=4188',
                  '2005':frcUrl + 'content.aspx?id=4388',}
 championshipYears = {'default':frcUrl + 'content.aspx?id=432',
+                     '2013':frcUrl + 'content.aspx?id=432',  # No page exists.
                      '2012':frcUrl + 'content.aspx?id=432',  # No page exists.
                      '2011':frcUrl + 'content.aspx?id=432',  # No page exists.
                      '2010':frcUrl + 'content.aspx?id=432',  # No page exists.
@@ -191,7 +194,7 @@ class TeamPage(webapp.RequestHandler):
       }
       path = 'templates/no_team.html'
       self.response.out.write(template.render(path, template_values))
-  
+
 class AreaTeamListPage(webapp.RequestHandler):
   """
   Redirects the user to the team list for the given area.
@@ -261,7 +264,7 @@ class EventTeamListPage(webapp.RequestHandler):
   def get(self):
     event = GetEvent(self)
     year = GetYear(self)
-    
+
     if event == 'archimedes':
       event = 'cmp&division=archimedes'
     elif event == 'curie':
@@ -290,12 +293,12 @@ class EventMatchResultsPage(webapp.RequestHandler):
   def get(self):
     year = GetYear(self)
     event = GetEvent(self)
-    
+
     # In 2005, 2006 and 2008 the code "einstein" was used instead of "cmp".
     if event == 'cmp':
       if year == '2005' or year == '2006' or year == '2008':
         event = 'einstein'
-    
+
     if (year == '2007' or year == '2006' or year == '2004'):
       Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
                     + '/matches.html')
@@ -321,7 +324,7 @@ class EventAwardsPage(webapp.RequestHandler):
   def get(self):
     year = GetYear(self)
     event = GetEvent(self)
-    
+
     # In 2005, 2006 and 2008 the code "einstein" was used instead of "cmp".
     if event == 'cmp':
       if year == '2005' or year == '2006' or year == '2008':
@@ -475,7 +478,7 @@ class KickoffPage(webapp.RequestHandler):
   """
   def get(self):
     Redir(self, frcUrl + 'kickoff')
-    
+
 class CookiePage(webapp.RequestHandler):
   """
   ???
