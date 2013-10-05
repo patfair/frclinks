@@ -479,6 +479,13 @@ class KickoffPage(webapp.RequestHandler):
   def get(self):
     Redir(self, frcUrl + 'kickoff')
 
+class CalendarPage(webapp.RequestHandler):
+  """
+  Redirects the user to the FRC Calendar of Events.
+  """
+  def get(self):
+    Redir(self, frcUrl + 'calendar')
+
 class CookiePage(webapp.RequestHandler):
   """
   ???
@@ -603,6 +610,8 @@ application = webapp.WSGIApplication([
     (r'/vims/?', VIMSPage),
     (r'/kickoff/?', KickoffPage),
     (r'/ko/?', KickoffPage),
+    (r'/calendar/?', CalendarPage),
+    (r'/cal/?', CalendarPage),
     (r'/cookie/?', CookiePage),
     (r'/flushteams/?', FlushTeamsPage),
     (r'/scrapeteams/\d{4}/\d+/?', ScrapeTeamsPage),
