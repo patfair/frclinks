@@ -53,6 +53,9 @@ eventRe = re.compile(r'[A-Za-z]+\d?')
 # Extracts the year from the end of the URL.
 yearRe = re.compile(r'\d{4}')
 
+# Get the team and the year from the URL
+blueAllianceRe = re.compile(r'(\d+)/?(\d{4})?')
+
 # Extracts the team webpage from the FIRST team info page.
 websiteRe = re.compile(r'Team Website:.*href="(http://[A-Za-z0-9\.\-_/#]+)')
 
@@ -237,8 +240,8 @@ class TeamTheBlueAlliancePage(webapp.RequestHandler):
   Redirects the user to the given team's The Blue Alliance page.
   """
   def get(self):
-    team = numberRe.findall(self.request.path)[-1]
-    Redir(self, 'http://www.thebluealliance.com/team/' + team)
+    team = blueAllianceRe.findall(self.request.path)[-1]
+    Redir(self, 'http://www.thebluealliance.com/team/%s/%s' % team)
 
 class TeamChiefDelphiMediaPage(webapp.RequestHandler):
   """
@@ -543,6 +546,7 @@ application = webapp.WSGIApplication([
     (r'/t/\d+/?', TeamPage),
     (r'/website/\d+/?', TeamWebsitePage),
     (r'/w/\d+/?', TeamWebsitePage),
+    (r'/tba/\d+/\d{4}/?', TeamTheBlueAlliancePage),
     (r'/tba/\d+/?', TeamTheBlueAlliancePage),
     (r'/cdm/\d+/?', TeamChiefDelphiMediaPage),
     (r'/teams?/?', AllTeamsPage),
