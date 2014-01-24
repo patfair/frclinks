@@ -174,7 +174,8 @@ def GetTeamPageUrl(handler):
       tpid = ScrapeTeam(team, defaultYear)
 
     if tpid:
-      return ('http://www.usfirst.org/whats-going-on/team/FRC/' + tpid)
+      return ('http://www.usfirst.org/whats-going-on/team/' + tpid +
+                  '/?ProgramCode=FRC')
 
     return None
 
