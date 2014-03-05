@@ -241,8 +241,10 @@ class TeamTheBlueAlliancePage(webapp.RequestHandler):
   Redirects the user to the given team's The Blue Alliance page.
   """
   def get(self):
-    team = blueAllianceRe.findall(self.request.path)[-1]
-    Redir(self, 'http://www.thebluealliance.com/team/%s/%s' % team)
+    team, year = blueAllianceRe.findall(self.request.path)[-1]
+    if len(year) == 0:
+      year = defaultYear
+    Redir(self, 'http://www.thebluealliance.com/team/%s/%s' % (team, year))
 
 class TeamChiefDelphiMediaPage(webapp.RequestHandler):
   """
