@@ -538,7 +538,7 @@ class RobotsTxtPage(webapp.RequestHandler):
 
 class GetFRCSpyDump(webapp.RequestHandler):
   """
-  Gets the latest CSV dump from Chief Delpgi FRC-Spy (Twitter @FRCFMS data)
+  Gets the latest CSV dump from Chief Delphi FRC-Spy (Twitter @FRCFMS data)
   """
   def get(self):
     Redir(self, 'http://www.chiefdelphi.com/forums/frcspy.php?xml=csv')
