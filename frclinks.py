@@ -36,12 +36,10 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-from team import FlushNewTeams
-from team import FlushOldTeams
-from team import GetOldTeams
-from team import LookupOldTeamPage
+from team import FlushTeams
 from team import LookupTeam
 from team import ScrapeTeam
+from team import ScrapeTeams
 
 # Extracts the team number from the end of the URL.
 numberRe = re.compile(r'\d+')
@@ -55,11 +53,14 @@ eventRe = re.compile(r'[A-Za-z]+\d?')
 # Extracts the year from the end of the URL.
 yearRe = re.compile(r'\d{4}')
 
-# Extracts the team webpage from the FIRST team info page.
-websiteRe = re.compile(r'href="http://[A-Za-z0-9\.\-_/#]+')
+# Get the team and the year from the URL
+blueAllianceRe = re.compile(r'(\d+)/?(\d{4})?')
 
-# Extracts old team scrape parameters.
-oldTeamRe = re.compile(r'(\d{4})/(\d+)')
+# Extracts the team webpage from the FIRST team info page.
+websiteRe = re.compile(r'Team Website:.*href="(http://[A-Za-z0-9\.\-_/#]+)')
+
+# Extracts team scrape parameters.
+scrapeTeamsRe = re.compile(r'(\d{4})/(\d+)')
 
 # Extracts the requested manual section.
 sectionRe = re.compile(r'/([iagrt])')
@@ -68,13 +69,15 @@ sectionRe = re.compile(r'/([iagrt])')
 sessionRe = re.compile(r'session=myarea:([A-Za-z0-9]+)')
 
 # Year to default to for event information if none is provided.
-defaultYear = '2013'
+defaultYear = '2014'
 
 # Base url for many FRC pages.
 frcUrl = 'http://www.usfirst.org/roboticsprograms/frc/'
 
 # Mapping of years to year-specific pages.
 regionalYears = {'default':frcUrl + 'regionalevents.aspx?id=430',
+                 '2013':'https://my.usfirst.org/myarea/index.lasso?' +
+                     'event_type=FRC&year=2013&archive=true',
                  '2012':'https://my.usfirst.org/myarea/index.lasso?' +
                      'event_type=FRC&year=2012&archive=true',
                  '2011':'https://my.usfirst.org/myarea/index.lasso?' +
@@ -90,6 +93,7 @@ regionalYears = {'default':frcUrl + 'regionalevents.aspx?id=430',
                  '2006':frcUrl + 'content.aspx?id=4188',
                  '2005':frcUrl + 'content.aspx?id=4388',}
 championshipYears = {'default':frcUrl + 'content.aspx?id=432',
+                     '2013':frcUrl + 'content.aspx?id=432',  # No page exists.
                      '2012':frcUrl + 'content.aspx?id=432',  # No page exists.
                      '2011':frcUrl + 'content.aspx?id=432',  # No page exists.
                      '2010':frcUrl + 'content.aspx?id=432',  # No page exists.
@@ -100,20 +104,15 @@ championshipYears = {'default':frcUrl + 'content.aspx?id=432',
                      '2005':frcUrl + 'content.aspx?id=4388',
                      '2004':frcUrl + 'content.aspx?id=9302',
                      '2003':frcUrl + 'content.aspx?id=9304',}
-documentsYears = {'default':frcUrl + 'content.aspx?id=4094',
-                  '2013':frcUrl + 'competition-manual-and-related-documents',
-                  '2012':frcUrl + '2012-competition-manul-and-related-documents',
+documentsYears = {'default':frcUrl + 'competition-manual-and-related-documents',
+                  '2013':frcUrl + '2013-competition-manual-and-related-documents',
+                  '2012':frcUrl + '2012-competition-manual-and-related-documents',
                   '2011':frcUrl + '2011-competition-manual-and-related-documents',
                   '2010':frcUrl + 'content.aspx?id=18068',
                   '2009':frcUrl + 'content.aspx?id=15523',
                   '2008':frcUrl + 'content.aspx?id=9152',
                   '2007':frcUrl + 'content.aspx?id=7430',
                   '2006':frcUrl + 'content.aspx?id=3630',}
-documentsSections = {'i':'30',
-                     'a':'55',
-                     'g':'56',
-                     'r':'57',
-                     't':'58',}
 
 # Pre-compute the event list for the instructions page.
 eventList = json.load(open("events.json"))
@@ -130,6 +129,13 @@ for i in xrange(0, (len(eventList) + 1) / 2):
     row.append("")
   events.append(row)
 
+# Pre-compute the event code translation tables.
+newToOldEventCodes = {}
+oldToNewEventCodes = {}
+for event in eventList:
+  newToOldEventCodes[event['code']] = event['old_code']
+  oldToNewEventCodes[event['old_code']] = event['code']
+
 def GetYear(handler):
   endNumber = yearRe.findall(handler.request.path)
   if len(endNumber) > 0:
@@ -139,6 +145,12 @@ def GetYear(handler):
 
 def GetEvent(handler):
   event = eventRe.findall(handler.request.path)[-1]
+  year = int(GetYear(handler))
+  if year < 2013 and newToOldEventCodes.has_key(event):
+    event = newToOldEventCodes[event]
+  elif year >= 2013 and oldToNewEventCodes.has_key(event):
+    event = oldToNewEventCodes[event]
+
   if event == 'arc':
     event = 'archimedes'
   elif event == 'cur':
@@ -154,22 +166,16 @@ def GetEvent(handler):
 def GetTeamPageUrl(handler):
     team = numberRe.findall(handler.request.path)[-1]
 
-    # First, try checking the datastore for the current season`s tpid. 
+    # Try checking the datastore for the team's most recent tpid.
     tpid = LookupTeam(team)
-    if tpid:
-      return ('https://my.usfirst.org/myarea/index.lasso?page=team_details' +
-                    '&tpid=' + tpid)
 
-    # Second, try checking the datastore for a past season`s URL.
-    teamPageUrl = LookupOldTeamPage(team)
-    if teamPageUrl:
-      return teamPageUrl
+    if not tpid:
+      # Otherwise, try scraping the FIRST website for the current season's tpid.
+      tpid = ScrapeTeam(team, defaultYear)
 
-    # Third, try scraping the FIRST website for the current season`s tpid.
-    tpid = ScrapeTeam(team, defaultYear)
     if tpid:
-      return ('https://my.usfirst.org/myarea/index.lasso?page=team_details' +
-                    '&tpid=' + tpid)
+      return ('http://www.usfirst.org/whats-going-on/team/' + tpid +
+                  '/?ProgramCode=FRC')
 
     return None
 
@@ -192,7 +198,7 @@ class TeamPage(webapp.RequestHandler):
       }
       path = 'templates/no_team.html'
       self.response.out.write(template.render(path, template_values))
-  
+
 class AreaTeamListPage(webapp.RequestHandler):
   """
   Redirects the user to the team list for the given area.
@@ -228,15 +234,17 @@ class TeamWebsitePage(webapp.RequestHandler):
         path = 'templates/no_website.html'
         self.response.out.write(template.render(path, template_values))
       else:
-        Redir(self, website[0][6:])
+        Redir(self, website[0])
 
 class TeamTheBlueAlliancePage(webapp.RequestHandler):
   """
   Redirects the user to the given team's The Blue Alliance page.
   """
   def get(self):
-    team = numberRe.findall(self.request.path)[-1]
-    Redir(self, 'http://www.thebluealliance.com/team/' + team)
+    team, year = blueAllianceRe.findall(self.request.path)[-1]
+    if len(year) == 0:
+      year = defaultYear
+    Redir(self, 'http://www.thebluealliance.com/team/%s/%s' % (team, year))
 
 class TeamChiefDelphiMediaPage(webapp.RequestHandler):
   """
@@ -260,16 +268,16 @@ class EventTeamListPage(webapp.RequestHandler):
   Redirects the user to the team list for the given event.
   """
   def get(self):
-    event = eventRe.findall(self.request.path)[-1]
+    event = GetEvent(self)
     year = GetYear(self)
-    
-    if event == 'arc':
+
+    if event == 'archimedes':
       event = 'cmp&division=archimedes'
-    elif event == 'cur':
+    elif event == 'curie':
       event = 'cmp&division=curie'
-    elif event == 'gal':
+    elif event == 'galileo':
       event = 'cmp&division=galileo'
-    elif event == 'new':
+    elif event == 'newton':
       event = 'cmp&division=newton'
     Redir(self, 'https://my.usfirst.org/myarea/index.lasso?' +
                   'page=teamlist&event_type=FRC&sort_teams=number' +
@@ -291,12 +299,12 @@ class EventMatchResultsPage(webapp.RequestHandler):
   def get(self):
     year = GetYear(self)
     event = GetEvent(self)
-    
+
     # In 2005, 2006 and 2008 the code "einstein" was used instead of "cmp".
     if event == 'cmp':
       if year == '2005' or year == '2006' or year == '2008':
         event = 'einstein'
-    
+
     if (year == '2007' or year == '2006' or year == '2004'):
       Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
                     + '/matches.html')
@@ -322,7 +330,7 @@ class EventAwardsPage(webapp.RequestHandler):
   def get(self):
     year = GetYear(self)
     event = GetEvent(self)
-    
+
     # In 2005, 2006 and 2008 the code "einstein" was used instead of "cmp".
     if event == 'cmp':
       if year == '2005' or year == '2006' or year == '2008':
@@ -331,12 +339,33 @@ class EventAwardsPage(webapp.RequestHandler):
     Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
                   + '/awards.html')
 
+class EventAgendaPage(webapp.RequestHandler):
+  """
+  Redirects the user to the public agenda for the given event.
+  """
+  def get(self):
+    year = GetYear(self)
+    event = GetEvent(self)
+
+    Redir(self, 'http://www.usfirst.org/uploadedFiles/Robotics_Programs/FRC/'
+                  + 'Events/%s/%s_%s_Agenda.pdf' % (year, year, event.upper()))
+
 class EventTheBlueAlliancePage(webapp.RequestHandler):
   """
   Redirects the user to the The Blue Alliance page for the given event.
   """
   def get(self):
-    event = eventRe.findall(self.request.path)[-1]
+    event = GetEvent(self)
+    if event == 'archimedes':
+      event = 'arc'
+    elif event == 'curie':
+      event = 'cur'
+    elif event == 'galileo':
+      event = 'gal'
+    elif event == 'newton':
+      event = 'new'
+    elif event == 'einstein':
+      event = 'ein'
     Redir(self, 'http://www.thebluealliance.com/event/' + GetYear(self) + event)
 
 class RegionalsPage(webapp.RequestHandler):
@@ -379,27 +408,19 @@ class DocumentsPage(webapp.RequestHandler):
     else:
       Redir(self, documentsYears.get('default'))
 
-class DocumentsSectionPage(webapp.RequestHandler):
-  """
-  Redirects the user to the requested section of the Competition Manual.
-  """
-  def get(self):
-    sectionNumber = documentsSections[sectionRe.findall(self.request.path)[-1]]
-    Redir(self, 'http://frc-manual.usfirst.org/viewItem/' + sectionNumber)
-
 class KitOfPartsPage(webapp.RequestHandler):
   """
   Redirects the user to the Kit of Parts page.
   """
   def get(self):
-    Redir(self, frcUrl + 'frc-kit-of-parts')
+    Redir(self, frcUrl + 'kit-of-parts')
 
 class UpdatesPage(webapp.RequestHandler):
   """
   Redirects the user to the Team Updates page.
   """
   def get(self):
-    Redir(self, 'http://frc-manual.usfirst.org/TeamUpdates/0')
+    Redir(self, 'http://frc-manual.usfirst.org/Updates/0')
 
 class BlogPage(webapp.RequestHandler):
   """
@@ -438,11 +459,39 @@ class YouTubePage(webapp.RequestHandler):
 
 class TIMSPage(webapp.RequestHandler):
   """
-  Redirects the FRC Team Information Management System (TIMS).
+  Redirects the user to the FRC Team Information Management System (TIMS).
   """
   def get(self):
     Redir(self, 'https://my.usfirst.org/frc/tims/site.lasso')
-    
+
+class STIMSPage(webapp.RequestHandler):
+  """
+  Redirects the user to the Student Team Information Member System (TIMS).
+  """
+  def get(self):
+    Redir(self, 'https://my.usfirst.org/stims/site.lasso')
+
+class VIMSPage(webapp.RequestHandler):
+  """
+  Redirects the user to the Volunteer Information & Matching System (VIMS).
+  """
+  def get(self):
+    Redir(self, 'https://my.usfirst.org/FIRSTPortal/Login/VIMS_Login.aspx')
+
+class KickoffPage(webapp.RequestHandler):
+  """
+  Redirects the user to the FRC Kickoff Page from FIRST
+  """
+  def get(self):
+    Redir(self, frcUrl + 'kickoff')
+
+class CalendarPage(webapp.RequestHandler):
+  """
+  Redirects the user to the FRC Calendar of Events.
+  """
+  def get(self):
+    Redir(self, frcUrl + 'calendar')
+
 class CookiePage(webapp.RequestHandler):
   """
   ???
@@ -450,34 +499,24 @@ class CookiePage(webapp.RequestHandler):
   def get(self):
     Redir(self, 'http://www.chiefdelphi.com/media/photos/33801')
 
-class FlushNewTeamsPage(webapp.RequestHandler):
+class FlushTeamsPage(webapp.RequestHandler):
   """
   Deletes 500 teams at a time from the datastore (Google limit).
   Unlisted on the instructions page; intended for admin use.
   """
   def get(self):
-    FlushNewTeams()
+    FlushTeams()
     path = 'templates/instructions.html'
     self.response.out.write(template.render(path, {}))
 
-class FlushOldTeamsPage(webapp.RequestHandler):
-  """
-  Deletes 500 teams at a time from the datastore (Google limit).
-  Unlisted on the instructions page; intended for admin use.
-  """
-  def get(self):
-    FlushOldTeams()
-    path = 'templates/instructions.html'
-    self.response.out.write(template.render(path, {}))
-
-class GetOldTeamsPage(webapp.RequestHandler):
+class ScrapeTeamsPage(webapp.RequestHandler):
   """
   Retrieves and caches teams from the given year in the datastore.
   Unlisted on the instructions page; intended for admin use.
   """
   def get(self):
-    oldTeamMatch = oldTeamRe.findall(self.request.path)
-    GetOldTeams(oldTeamMatch[-1][0], oldTeamMatch[-1][1])
+    scrapeTeamsMatch = scrapeTeamsRe.findall(self.request.path)
+    ScrapeTeams(scrapeTeamsMatch[-1][0], scrapeTeamsMatch[-1][1])
     path = 'templates/instructions.html'
     self.response.out.write(template.render(path, {}))
 
@@ -510,6 +549,7 @@ application = webapp.WSGIApplication([
     (r'/t/\d+/?', TeamPage),
     (r'/website/\d+/?', TeamWebsitePage),
     (r'/w/\d+/?', TeamWebsitePage),
+    (r'/tba/\d+/\d{4}/?', TeamTheBlueAlliancePage),
     (r'/tba/\d+/?', TeamTheBlueAlliancePage),
     (r'/cdm/\d+/?', TeamChiefDelphiMediaPage),
     (r'/teams?/?', AllTeamsPage),
@@ -530,6 +570,10 @@ application = webapp.WSGIApplication([
     (r'/events?/awards/[A-Za-z]+\d?/?', EventAwardsPage),
     (r'/e/a/[A-Za-z]+\d?/\d{4}/?', EventAwardsPage),
     (r'/e/a/[A-Za-z]+\d?/?', EventAwardsPage),
+    (r'/events?/agenda/[A-Za-z]+\d?/\d{4}/?', EventAgendaPage),
+    (r'/events?/agenda/[A-Za-z]+\d?/?', EventAgendaPage),
+    (r'/e/g/[A-Za-z]+\d?/\d{4}/?', EventAgendaPage),
+    (r'/e/g/[A-Za-z]+\d?/?', EventAgendaPage),
     (r'/events?/tba/[A-Za-z]+\d?/\d{4}/?', EventTheBlueAlliancePage),
     (r'/events?/tba/[A-Za-z]+\d?/?', EventTheBlueAlliancePage),
     (r'/e/tba/[A-Za-z]+\d?/\d{4}/?', EventTheBlueAlliancePage),
@@ -555,7 +599,6 @@ application = webapp.WSGIApplication([
     (r'/docs/?', DocumentsPage),
     (r'/d/\d{4}/?', DocumentsPage),
     (r'/d/?', DocumentsPage),
-    (r'/d/[iagrt]/?', DocumentsSectionPage),
     (r'/kitofparts/?', KitOfPartsPage),
     (r'/k/?', KitOfPartsPage),
     (r'/updates/?', UpdatesPage),
@@ -570,10 +613,15 @@ application = webapp.WSGIApplication([
     (r'/youtube/?', YouTubePage),
     (r'/y/?', YouTubePage),
     (r'/tims/?', TIMSPage),
+    (r'/stims/?', STIMSPage),
+    (r'/vims/?', VIMSPage),
+    (r'/kickoff/?', KickoffPage),
+    (r'/ko/?', KickoffPage),
+    (r'/calendar/?', CalendarPage),
+    (r'/cal/?', CalendarPage),
     (r'/cookie/?', CookiePage),
-    (r'/flushnewteams/?', FlushNewTeamsPage),
-    (r'/flusholdteams/?', FlushOldTeamsPage),
-    (r'/getoldteams/\d{4}/\d+/?', GetOldTeamsPage),
+    (r'/flushteams/?', FlushTeamsPage),
+    (r'/scrapeteams/\d{4}/\d+/?', ScrapeTeamsPage),
     (r'/robots.txt', RobotsTxtPage),
     ('.*', InstructionPage),
   ],
