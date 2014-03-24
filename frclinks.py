@@ -536,6 +536,13 @@ class RobotsTxtPage(webapp.RequestHandler):
     self.response.headers.add_header('content-type', 'text/plain')
     self.response.out.write('User-agent: *\nDisallow:')
 
+class GetFRCSpyDump(webapp.RequestHandler):
+  """
+  Gets the latest CSV dump from Chief Delpgi FRC-Spy (Twitter @FRCFMS data)
+  """
+  def get(self):
+    Redir(self, 'http://www.chiefdelphi.com/forums/frcspy.php?xml=csv')
+
 # The mapping of URLs to handlers. For some reason, regular expressions that
 # use parentheses (e.g. '(championship|cmp|c)') cause an error, so some
 # duplication exists.
@@ -616,6 +623,7 @@ application = webapp.WSGIApplication([
     (r'/stims/?', STIMSPage),
     (r'/vims/?', VIMSPage),
     (r'/kickoff/?', KickoffPage),
+    (r'/fmsdump/?', GetFRCSpyDump),
     (r'/ko/?', KickoffPage),
     (r'/calendar/?', CalendarPage),
     (r'/cal/?', CalendarPage),
