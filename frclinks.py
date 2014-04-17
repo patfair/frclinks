@@ -180,8 +180,12 @@ def GetTeamPageUrl(handler):
     return None
 
 def Redir(handler, url):
-  handler.response.out.write(
-      template.render('templates/redirect.html', { 'url' : url, }))
+  if 'my.usfirst.org/myarea' in url:
+    # FIRST is now checking the 'Referer' header for the string 'usfirst.org'.
+    handler.redirect('/usfirst.org?' + urllib.urlencode({ 'url' : url }))
+  else:
+    handler.response.out.write(
+        template.render('templates/redirect.html', { 'url' : url, }))
 
 class TeamPage(webapp.RequestHandler):
   """
@@ -543,6 +547,14 @@ class GetFRCSpyDump(webapp.RequestHandler):
   def get(self):
     Redir(self, 'http://www.chiefdelphi.com/forums/frcspy.php?xml=csv')
 
+class ReferrerRedirectPage(webapp.RequestHandler):
+  """
+  Redirects to fool FIRST's referrer-based checking.
+  """
+  def get(self):
+    self.response.out.write(template.render(
+        'templates/redirect.html', { 'url' : self.request.get('url'), }))
+
 # The mapping of URLs to handlers. For some reason, regular expressions that
 # use parentheses (e.g. '(championship|cmp|c)') cause an error, so some
 # duplication exists.
@@ -631,6 +643,7 @@ application = webapp.WSGIApplication([
     (r'/flushteams/?', FlushTeamsPage),
     (r'/scrapeteams/\d{4}/\d+/?', ScrapeTeamsPage),
     (r'/robots.txt', RobotsTxtPage),
+    (r'/usfirst.org', ReferrerRedirectPage),
     ('.*', InstructionPage),
   ],
   debug=True)
