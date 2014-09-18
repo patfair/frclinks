@@ -69,13 +69,15 @@ sectionRe = re.compile(r'/([iagrt])')
 sessionRe = re.compile(r'session=myarea:([A-Za-z0-9]+)')
 
 # Year to default to for event information if none is provided.
-defaultYear = '2014'
+defaultYear = '2015'
 
 # Base url for many FRC pages.
 frcUrl = 'http://www.usfirst.org/roboticsprograms/frc/'
 
 # Mapping of years to year-specific pages.
 regionalYears = {'default':frcUrl + 'regionalevents.aspx?id=430',
+                 '2014':'https://my.usfirst.org/myarea/index.lasso?' +
+                     'event_type=FRC&year=2014&archive=true',
                  '2013':'https://my.usfirst.org/myarea/index.lasso?' +
                      'event_type=FRC&year=2013&archive=true',
                  '2012':'https://my.usfirst.org/myarea/index.lasso?' +
@@ -93,11 +95,7 @@ regionalYears = {'default':frcUrl + 'regionalevents.aspx?id=430',
                  '2006':frcUrl + 'content.aspx?id=4188',
                  '2005':frcUrl + 'content.aspx?id=4388',}
 championshipYears = {'default':frcUrl + 'content.aspx?id=432',
-                     '2013':frcUrl + 'content.aspx?id=432',  # No page exists.
-                     '2012':frcUrl + 'content.aspx?id=432',  # No page exists.
-                     '2011':frcUrl + 'content.aspx?id=432',  # No page exists.
-                     '2010':frcUrl + 'content.aspx?id=432',  # No page exists.
-                     '2009':frcUrl + 'content.aspx?id=14716',
+                     '2009':frcUrl + 'content.aspx?id=14716',  # No special page exists from 2010 onwards.
                      '2008':frcUrl + 'content.aspx?id=11286',
                      '2007':frcUrl + 'content.aspx?id=6778',
                      '2006':frcUrl + 'content.aspx?id=4188',
