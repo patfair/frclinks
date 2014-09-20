@@ -115,16 +115,15 @@ documentsYears = {'default':frcUrl + 'competition-manual-and-related-documents',
 # Pre-compute the event list for the instructions page.
 eventList = json.load(open("events.json"))
 events = []
-for i in xrange(0, (len(eventList) + 1) / 2):
-  row = [eventList[i]['code'], eventList[i]['old_code'], eventList[i]['name']]
-  j = i + (len(eventList) + 1) / 2
-  if j < len(eventList):
-    row.append(eventList[j]['code'])
-    row.append(eventList[j]['old_code'])
-    row.append(eventList[j]['name'])
-  else:
-    row.append("")
-    row.append("")
+for i in xrange(0, (len(eventList) + 2) / 3):
+  row = [eventList[i]['code'], eventList[i]['name']]
+  j = i + (len(eventList) + 2) / 3
+  row.append(eventList[j]['code'])
+  row.append(eventList[j]['name'])
+  k = j + (len(eventList) + 2) / 3
+  if k < len(eventList):
+    row.append(eventList[k]['code'])
+    row.append(eventList[k]['name'])
   events.append(row)
 
 # Pre-compute the event code translation tables.
