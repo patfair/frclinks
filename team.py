@@ -87,7 +87,7 @@ def ScrapeTeams(year, start):
       'https://my.usfirst.org/myarea/index.lasso?page=searchresults&' +
       'programs=FRC&reports=teams&sort_teams=number&results_size=250&' +
       'omit_searchform=1&season_FRC=' + year + '&skip_teams=' + str(start),
-      deadline=10)
+      deadline=10, headers={'Referer': 'usfirst.org'})
   teamResults = teamRe.findall(teamList.content)
   for teamResult in teamResults:
     teamNumber = int(teamResult[1])
