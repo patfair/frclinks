@@ -535,7 +535,7 @@ class RobotsTxtPage(webapp.RequestHandler):
   """
   def get(self):
     self.response.headers.add_header('content-type', 'text/plain')
-    self.response.out.write('User-agent: *\nDisallow:')
+    self.response.out.write('User-agent: *\nDisallow: /')
 
 class GetFRCSpyDump(webapp.RequestHandler):
   """
