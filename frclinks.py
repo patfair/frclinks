@@ -414,7 +414,7 @@ class UpdatesPage(webapp.RequestHandler):
   Redirects the user to the Team Updates page.
   """
   def get(self):
-    Redir(self, 'http://frc-manual.usfirst.org/Updates/0')
+    Redir(self, documentsYears.get('default'))
 
 class BlogPage(webapp.RequestHandler):
   """
