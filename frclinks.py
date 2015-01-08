@@ -391,13 +391,6 @@ class ChampionshipPage(webapp.RequestHandler):
     else:
       Redir(self, championshipYears.get('default'))
 
-class ControlSystemPage(webapp.RequestHandler):
-  """
-  Redirects the user to the 2012 Control System page.
-  """
-  def get(self):
-    Redir(self, frcUrl + '2012-kit-of-parts-control-system')
-
 class DocumentsPage(webapp.RequestHandler):
   """
   Redirects the user to the Competition Manual page.
@@ -608,8 +601,6 @@ application = webapp.WSGIApplication([
     (r'/cmp/?', ChampionshipPage),
     (r'/c/\d{4}/?', ChampionshipPage),
     (r'/c/?', ChampionshipPage),
-    (r'/controlsystem/?', ControlSystemPage),
-    (r'/cs/?', ControlSystemPage),
     (r'/documents/?', DocumentsPage),
     (r'/docs/\d{4}/?', DocumentsPage),
     (r'/docs/?', DocumentsPage),
