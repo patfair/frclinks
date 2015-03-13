@@ -290,8 +290,15 @@ class EventSchedulePage(webapp.RequestHandler):
   Redirects the user to the qualification match schedule for the given event.
   """
   def get(self):
-    Redir(self, 'http://www2.usfirst.org/' + GetYear(self) + 'comp/Events/' +
-                  GetEvent(self) + '/ScheduleQual.html')
+    event = GetEvent(self)
+    year = GetYear(self)
+
+    if int(year) >= 2015:
+      Redir(self, 'http://frc-events.usfirst.org/' + year + '/' + event +
+                    '/qualifications')
+    else:
+      Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' +
+                    event + '/ScheduleQual.html')
 
 class EventMatchResultsPage(webapp.RequestHandler):
   """
@@ -306,7 +313,10 @@ class EventMatchResultsPage(webapp.RequestHandler):
       if year == '2005' or year == '2006' or year == '2008':
         event = 'einstein'
 
-    if (year == '2007' or year == '2006' or year == '2004'):
+    if int(year) >= 2015:
+      Redir(self, 'http://frc-events.usfirst.org/' + year + '/' + event +
+                    '/qualifications')
+    elif (year == '2007' or year == '2006' or year == '2004'):
       Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
                     + '/matches.html')
     elif year == '2003':
@@ -321,8 +331,15 @@ class EventRankingsPage(webapp.RequestHandler):
   Redirects the user to the rankings for the given event.
   """
   def get(self):
-    Redir(self, 'http://www2.usfirst.org/' + GetYear(self) + 'comp/Events/' +
-                  GetEvent(self) + '/rankings.html')
+    event = GetEvent(self)
+    year = GetYear(self)
+
+    if int(year) >= 2015:
+      Redir(self, 'http://frc-events.usfirst.org/' + year + '/' + event +
+                    '/rankings')
+    else:
+      Redir(self, 'http://www2.usfirst.org/' + GetYear(self) + 'comp/Events/' +
+                    GetEvent(self) + '/rankings.html')
 
 class EventAwardsPage(webapp.RequestHandler):
   """
@@ -337,8 +354,12 @@ class EventAwardsPage(webapp.RequestHandler):
       if year == '2005' or year == '2006' or year == '2008':
         event = 'einstein'
 
-    Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
-                  + '/awards.html')
+    if int(year) >= 2015:
+      Redir(self, 'http://frc-events.usfirst.org/' + year + '/' + event +
+                    '/awards')
+    else:
+      Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
+                    + '/awards.html')
 
 class EventAgendaPage(webapp.RequestHandler):
   """
