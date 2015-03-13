@@ -412,6 +412,14 @@ class ChampionshipPage(webapp.RequestHandler):
     else:
       Redir(self, championshipYears.get('default'))
 
+class DistrictRankingsPage(webapp.RequestHandler):
+  """
+  Redirects the user to the rankings page for the given district.
+  """
+  def get(self):
+    district = GetEvent(self)
+    Redir(self, 'http://frc-districtrankings.usfirst.org/' + district)
+
 class DocumentsPage(webapp.RequestHandler):
   """
   Redirects the user to the Competition Manual page.
@@ -622,6 +630,8 @@ application = webapp.WSGIApplication([
     (r'/cmp/?', ChampionshipPage),
     (r'/c/\d{4}/?', ChampionshipPage),
     (r'/c/?', ChampionshipPage),
+    (r'/districtrankings/[A-Za-z]+/?', DistrictRankingsPage),
+    (r'/dr/[A-Za-z]+/?', DistrictRankingsPage),
     (r'/documents/?', DocumentsPage),
     (r'/docs/\d{4}/?', DocumentsPage),
     (r'/docs/?', DocumentsPage),
