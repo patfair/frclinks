@@ -109,8 +109,12 @@
   { "code": "pncmp", "old_code": "", "name": "PNW District Championship" },
   { "code": "cmp", "old_code": "cmp", "name": "FIRST Championship" },
   { "code": "arc", "old_code": "arc", "name": "FIRST Championship - Archimedes Division" },
+  { "code": "cars", "old_code": "", "name": "FIRST Championship - Carson Division" },
+  { "code": "carv", "old_code": "", "name": "FIRST Championship - Carver Division" },
   { "code": "cur", "old_code": "cur", "name": "FIRST Championship - Curie Division" },
   { "code": "gal", "old_code": "gal", "name": "FIRST Championship - Galileo Division" },
+  { "code": "hop", "old_code": "", "name": "FIRST Championship - Hopper Division" },
   { "code": "new", "old_code": "new", "name": "FIRST Championship - Newton Division" },
+  { "code": "tes", "old_code": "", "name": "FIRST Championship - Tesla Division" },
   { "code": "ein", "old_code": "ein", "name": "FIRST Championship - Einstein Field" }
 ]

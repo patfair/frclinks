@@ -150,12 +150,20 @@ def GetEvent(handler):
 
   if event == 'arc':
     event = 'archimedes'
+  elif event == 'cars':
+    event = 'carson'
+  elif event == 'carv':
+    event = 'carver'
   elif event == 'cur':
     event = 'curie'
   elif event == 'gal':
     event = 'galileo'
+  elif event == 'hop':
+    event = 'hopper'
   elif event == 'new':
     event = 'newton'
+  elif event == 'tes':
+    event = 'tesla'
   elif event == 'ein':
     event = 'einstein'
   return event
@@ -274,12 +282,20 @@ class EventTeamListPage(webapp.RequestHandler):
 
     if event == 'archimedes':
       event = 'cmp&division=archimedes'
+    if event == 'carson':
+      event = 'cmp&division=carson'
+    if event == 'carver':
+      event = 'cmp&division=carver'
     elif event == 'curie':
       event = 'cmp&division=curie'
     elif event == 'galileo':
       event = 'cmp&division=galileo'
+    elif event == 'hopper':
+      event = 'cmp&division=hopper'
     elif event == 'newton':
       event = 'cmp&division=newton'
+    elif event == 'tesla':
+      event = 'cmp&division=tesla'
     Redir(self, 'https://my.usfirst.org/myarea/index.lasso?' +
                   'page=teamlist&event_type=FRC&sort_teams=number' +
                   '&year=' + year +
