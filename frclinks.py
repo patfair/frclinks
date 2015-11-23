@@ -56,9 +56,6 @@ yearRe = re.compile(r'\d{4}')
 # Get the team and the year from the URL
 blueAllianceRe = re.compile(r'(\d+)/?(\d{4})?')
 
-# Extracts the team webpage from the FIRST team info page.
-websiteRe = re.compile(r'Team Website:.*href="(http://[A-Za-z0-9\.\-_/#]+)')
-
 # Extracts team scrape parameters.
 scrapeTeamsRe = re.compile(r'(\d{4})/(\d+)')
 
@@ -168,7 +165,7 @@ def GetEvent(handler):
     event = 'einstein'
   return event
 
-def GetTeamPageUrl(handler):
+def GetTpid(handler):
     team = numberRe.findall(handler.request.path)[-1]
 
     # Try checking the datastore for the team's most recent tpid.
@@ -178,9 +175,12 @@ def GetTeamPageUrl(handler):
       # Otherwise, try scraping the FIRST website for the current season's tpid.
       tpid = ScrapeTeam(team, defaultYear)
 
+    return tpid
+
+def GetTeamPageUrl(handler):
+    tpid = GetTpid(handler)
     if tpid:
-      return ('http://www.usfirst.org/whats-going-on/team/' + tpid +
-                  '/?ProgramCode=FRC')
+      return ('http://www.firstinspires.org/team-event-search/team?id=' + tpid)
 
     return None
 
@@ -225,25 +225,29 @@ class TeamWebsitePage(webapp.RequestHandler):
   information page.
   """
   def get(self):
-    teamPageUrl = GetTeamPageUrl(self)
-    team = numberRe.findall(self.request.path)[-1]
-    if not teamPageUrl:
+    tpid = GetTpid(self)
+    if not tpid:
       template_values = {
         'team': team,
       }
       path = 'templates/no_team.html'
       self.response.out.write(template.render(path, template_values))
+      return
+
+    teamQueryUrl = ('http://es01.usfirst.org/teams/_search?size=1&source={' +
+        '"query":{"query_string":{"query":"_id:' + tpid + '"}}}')
+
+    teamInfoPage = urlfetch.fetch(teamQueryUrl, deadline=10)
+    teamInfo = json.loads(teamInfoPage.content)
+    website = teamInfo['hits']['hits'][0]['_source']['team_web_url']
+    if not website or len(website) == 0:
+      template_values = {
+        'team': team,
+      }
+      path = 'templates/no_website.html'
+      self.response.out.write(template.render(path, template_values))
     else:
-      teamPage = urlfetch.fetch(teamPageUrl, deadline=10)
-      website = websiteRe.findall(teamPage.content)
-      if len(website) == 0:
-        template_values = {
-          'team': team,
-        }
-        path = 'templates/no_website.html'
-        self.response.out.write(template.render(path, template_values))
-      else:
-        Redir(self, website[0])
+      Redir(self, website)
 
 class TeamTheBlueAlliancePage(webapp.RequestHandler):
   """
