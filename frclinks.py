@@ -69,45 +69,10 @@ sessionRe = re.compile(r'session=myarea:([A-Za-z0-9]+)')
 defaultYear = '2016'
 
 # Base url for many FRC pages.
-frcUrl = 'http://www.usfirst.org/roboticsprograms/frc/'
+frcUrl = 'http://www.firstinspires.org/robotics/frc/'
 
-# Mapping of years to year-specific pages.
-regionalYears = {'default':frcUrl + 'regionalevents.aspx?id=430',
-                 '2014':'https://my.usfirst.org/myarea/index.lasso?' +
-                     'event_type=FRC&year=2014&archive=true',
-                 '2013':'https://my.usfirst.org/myarea/index.lasso?' +
-                     'event_type=FRC&year=2013&archive=true',
-                 '2012':'https://my.usfirst.org/myarea/index.lasso?' +
-                     'event_type=FRC&year=2012&archive=true',
-                 '2011':'https://my.usfirst.org/myarea/index.lasso?' +
-                     'event_type=FRC&year=2011&archive=true',
-                 '2010':'https://my.usfirst.org/myarea/index.lasso?' +
-                     'event_type=FRC&year=2010&archive=true',
-                 '2009':'https://my.usfirst.org/myarea/index.lasso?' +
-                     'event_type=FRC&year=2009&archive=true',
-                 '2008':'https://my.usfirst.org/myarea/index.lasso?' +
-                     'event_type=FRC&year=2008&archive=true',
-                 '2007':'https://my.usfirst.org/myarea/index.lasso?' +
-                     'event_type=FRC&year=2007&archive=true',
-                 '2006':frcUrl + 'content.aspx?id=4188',
-                 '2005':frcUrl + 'content.aspx?id=4388',}
-championshipYears = {'default':frcUrl + 'content.aspx?id=432',
-                     '2009':frcUrl + 'content.aspx?id=14716',  # No special page exists from 2010 onwards.
-                     '2008':frcUrl + 'content.aspx?id=11286',
-                     '2007':frcUrl + 'content.aspx?id=6778',
-                     '2006':frcUrl + 'content.aspx?id=4188',
-                     '2005':frcUrl + 'content.aspx?id=4388',
-                     '2004':frcUrl + 'content.aspx?id=9302',
-                     '2003':frcUrl + 'content.aspx?id=9304',}
-documentsYears = {'default':frcUrl + 'competition-manual-and-related-documents',
-                  '2013':frcUrl + '2013-competition-manual-and-related-documents',
-                  '2012':frcUrl + '2012-competition-manual-and-related-documents',
-                  '2011':frcUrl + '2011-competition-manual-and-related-documents',
-                  '2010':frcUrl + 'content.aspx?id=18068',
-                  '2009':frcUrl + 'content.aspx?id=15523',
-                  '2008':frcUrl + 'content.aspx?id=9152',
-                  '2007':frcUrl + 'content.aspx?id=7430',
-                  '2006':frcUrl + 'content.aspx?id=3630',}
+documentsYears = {'default':'http://www.firstinspires.org/node/5331',
+                  '2016':'http://www.firstinspires.org/node/3806'}
 
 # Pre-compute the event list for the instructions page.
 eventList = json.load(open("events.json"))
@@ -415,22 +380,15 @@ class RegionalsPage(webapp.RequestHandler):
   Redirects the user to the Regional Events page.
   """
   def get(self):
-    year = GetYear(self)
-    if regionalYears.has_key(year):
-      Redir(self, regionalYears.get(year))
-    else:
-      Redir(self, regionalYears.get('default'))
+    # TODO: Find a better page; this is just a generic search.
+    Redir(self, 'http://www.firstinspires.org/team-event-search')
 
 class ChampionshipPage(webapp.RequestHandler):
   """
   Redirects the user to the Championship Event page.
   """
   def get(self):
-    year = GetYear(self)
-    if championshipYears.has_key(year):
-      Redir(self, championshipYears.get(year))
-    else:
-      Redir(self, championshipYears.get('default'))
+    Redir(self, 'http://championship.usfirst.org')
 
 class DistrictRankingsPage(webapp.RequestHandler):
   """
@@ -463,11 +421,15 @@ class UpdatesPage(webapp.RequestHandler):
   Redirects the user to the Team Updates page.
   """
   def get(self):
-    Redir(self, documentsYears.get('default'))
+    year = GetYear(self)
+    if documentsYears.has_key(year):
+      Redir(self, documentsYears.get(year))
+    else:
+      Redir(self, documentsYears.get('default'))
 
 class BlogPage(webapp.RequestHandler):
   """
-  Redirects the user to Bill's Blog.
+  Redirects the user to the FRC Blog.
   """
   def get(self):
     Redir(self, frcUrl + 'blog')
@@ -491,7 +453,7 @@ class NewsPage(webapp.RequestHandler):
   Redirects the user to the FRC news page.
   """
   def get(self):
-    Redir(self, frcUrl + 'emailblastarchive.aspx')
+    Redir(self, 'http://www.firstinspires.org/node/4341')
 
 class YouTubePage(webapp.RequestHandler):
   """
@@ -533,7 +495,7 @@ class CalendarPage(webapp.RequestHandler):
   Redirects the user to the FRC Calendar of Events.
   """
   def get(self):
-    Redir(self, frcUrl + 'calendar')
+    Redir(self, 'http://www.firstinspires.org/node/5486')
 
 class CookiePage(webapp.RequestHandler):
   """
