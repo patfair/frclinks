@@ -72,7 +72,7 @@ defaultYear = '2016'
 frcUrl = 'http://www.firstinspires.org/robotics/frc/'
 
 documentsYears = {'default':'http://www.firstinspires.org/node/5331',
-                  '2016':'http://www.firstinspires.org/node/3806'}
+                  '2016':frcUrl + 'game-manual-and-qa-system'}
 
 # Pre-compute the event list for the instructions page.
 eventList = json.load(open("events.json"))
