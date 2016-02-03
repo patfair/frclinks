@@ -380,8 +380,8 @@ class RegionalsPage(webapp.RequestHandler):
   Redirects the user to the Regional Events page.
   """
   def get(self):
-    # TODO: Find a better page; this is just a generic search.
-    Redir(self, 'http://www.firstinspires.org/team-event-search')
+    # TODO: Replace with an official page if one ever manifests.
+    Redir(self, 'http://173.255.246.196/2016/')
 
 class ChampionshipPage(webapp.RequestHandler):
   """
