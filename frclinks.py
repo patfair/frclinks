@@ -205,6 +205,8 @@ class TeamWebsitePage(webapp.RequestHandler):
     teamInfoPage = urlfetch.fetch(teamQueryUrl, deadline=10)
     teamInfo = json.loads(teamInfoPage.content)
     website = teamInfo['hits']['hits'][0]['_source']['team_web_url']
+    if not website.startswith("http"):
+      website = 'http://' + website
     if not website or len(website) == 0:
       template_values = {
         'team': team,
