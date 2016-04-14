@@ -398,7 +398,7 @@ class DistrictRankingsPage(webapp.RequestHandler):
   """
   def get(self):
     district = GetEvent(self)
-    Redir(self, 'http://frc-districtrankings.usfirst.org/' + district)
+    Redir(self, 'http://frc-districtrankings.usfirst.org/' + defaultYear + '/' + district)
 
 class DocumentsPage(webapp.RequestHandler):
   """
