@@ -216,6 +216,34 @@ class TeamWebsitePage(webapp.RequestHandler):
     else:
       Redir(self, website)
 
+class TeamMapPage(webapp.RequestHandler):
+  """
+  Redirects the user to a Google Map of the team's location.
+  """
+  def get(self):
+    tpid = GetTpid(self)
+    if not tpid:
+      template_values = {
+        'team': team,
+      }
+      path = 'templates/no_team.html'
+      self.response.out.write(template.render(path, template_values))
+      return
+
+    teamQueryUrl = ('http://es01.usfirst.org/teams/_search?size=1&source={' +
+        '"query":{"query_string":{"query":"_id:' + tpid + '"}}}')
+
+    teamInfoPage = urlfetch.fetch(teamQueryUrl, deadline=10)
+    teamInfo = json.loads(teamInfoPage.content)
+    city = teamInfo['hits']['hits'][0]['_source']['team_city']
+    stateProv = teamInfo['hits']['hits'][0]['_source']['team_stateprov']
+    country = teamInfo['hits']['hits'][0]['_source']['team_country']
+    mapUrl = 'https://www.google.com/maps?q=' + city + '+' + stateProv + '+' + country
+    if country in ['Canada', 'USA', 'United Kingdom']:
+      postalCode = teamInfo['hits']['hits'][0]['_source']['team_postalcode']
+      mapUrl += '+' + postalCode
+    Redir(self, mapUrl)
+
 class TeamTheBlueAlliancePage(webapp.RequestHandler):
   """
   Redirects the user to the given team's The Blue Alliance page.
@@ -571,6 +599,8 @@ application = webapp.WSGIApplication([
     (r'/(?i)t/\d+/?', TeamPage),
     (r'/(?i)website/\d+/?', TeamWebsitePage),
     (r'/(?i)w/\d+/?', TeamWebsitePage),
+    (r'/(?i)map/\d+/?', TeamMapPage),
+    (r'/(?i)m/\d+/?', TeamMapPage),
     (r'/(?i)tba/\d+/\d{4}/?', TeamTheBlueAlliancePage),
     (r'/(?i)tba/\d+/?', TeamTheBlueAlliancePage),
     (r'/(?i)cdm/\d+/?', TeamChiefDelphiMediaPage),

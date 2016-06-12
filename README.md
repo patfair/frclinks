@@ -1,7 +1,7 @@
 ## Overview
 
 FRCLinks takes the pain out of navigating the FIRST website. It lets you use short and memorable URLs which
-redirect to the appropriate pages on [usfirst.org](http://usfirst.org).
+redirect to the appropriate pages on [firstinspires.org](http://firstinspires.org).
 
 For example, to find the page listing Team 254's information and past events and awards, don't visit
 the FIRST website and have to click through several pages and menus; instead, just point your browser to
