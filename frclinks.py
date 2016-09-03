@@ -66,13 +66,13 @@ sectionRe = re.compile(r'/([iagrt])')
 sessionRe = re.compile(r'session=myarea:([A-Za-z0-9]+)')
 
 # Year to default to for event information if none is provided.
-defaultYear = '2016'
+defaultYear = '2017'
 
 # Base url for many FRC pages.
 frcUrl = 'http://www.firstinspires.org/robotics/frc/'
 
 documentsYears = {'default':'http://www.firstinspires.org/node/5331',
-                  '2016':frcUrl + 'game-manual-and-qa-system'}
+                  defaultYear:frcUrl + 'game-manual-and-qa-system'}
 
 # Pre-compute the event list for the instructions page.
 eventList = json.load(open("events.json"))
@@ -411,7 +411,7 @@ class RegionalsPage(webapp.RequestHandler):
   """
   def get(self):
     # TODO: Replace with an official page if one ever manifests.
-    Redir(self, 'http://173.255.246.196/2016/')
+    Redir(self, 'http://173.255.246.196/' + defaultYear)
 
 class ChampionshipPage(webapp.RequestHandler):
   """
