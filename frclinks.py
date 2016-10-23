@@ -88,13 +88,6 @@ for i in xrange(0, (len(eventList) + 2) / 3):
     row.append(eventList[k]['name'])
   events.append(row)
 
-# Pre-compute the event code translation tables.
-newToOldEventCodes = {}
-oldToNewEventCodes = {}
-for event in eventList:
-  newToOldEventCodes[event['code']] = event['old_code']
-  oldToNewEventCodes[event['old_code']] = event['code']
-
 def GetYear(handler):
   endNumber = yearRe.findall(handler.request.path)
   if len(endNumber) > 0:
@@ -104,11 +97,6 @@ def GetYear(handler):
 
 def GetEvent(handler):
   event = eventRe.findall(handler.request.path)[-1]
-  year = int(GetYear(handler))
-  if year < 2013 and newToOldEventCodes.has_key(event):
-    event = newToOldEventCodes[event]
-  elif year >= 2013 and oldToNewEventCodes.has_key(event):
-    event = oldToNewEventCodes[event]
 
   if event == 'arc':
     event = 'archimedes'
@@ -118,16 +106,25 @@ def GetEvent(handler):
     event = 'carver'
   elif event == 'cur':
     event = 'curie'
+  elif event == 'dal':
+    event = 'daly'
+  elif event == 'dar':
+    event = 'darwin'
   elif event == 'gal':
     event = 'galileo'
   elif event == 'hop':
     event = 'hopper'
   elif event == 'new':
     event = 'newton'
+  elif event == 'roe':
+    event = 'roebling'
   elif event == 'tes':
     event = 'tesla'
+  elif event == 'tur':
+    event = 'turing'
   elif event == 'ein':
     event = 'einstein'
+
   return event
 
 def GetTpid(handler):
@@ -279,22 +276,11 @@ class EventTeamListPage(webapp.RequestHandler):
     event = GetEvent(self)
     year = GetYear(self)
 
-    if event == 'archimedes':
-      event = 'cmp&division=archimedes'
-    if event == 'carson':
-      event = 'cmp&division=carson'
-    if event == 'carver':
-      event = 'cmp&division=carver'
-    elif event == 'curie':
-      event = 'cmp&division=curie'
-    elif event == 'galileo':
-      event = 'cmp&division=galileo'
-    elif event == 'hopper':
-      event = 'cmp&division=hopper'
-    elif event == 'newton':
-      event = 'cmp&division=newton'
-    elif event == 'tesla':
-      event = 'cmp&division=tesla'
+    if event in ['carver', 'galileo', 'hopper', 'newton', 'roebling', 'turing']:
+      event = 'cmptx&division=' + event
+    elif event in ['archimedes', 'carson', 'curie', 'daly', 'darwin', 'tesla']:
+      event = 'cmpmo&division=' + event
+
     Redir(self, 'https://my.usfirst.org/myarea/index.lasso?' +
                   'page=teamlist&event_type=FRC&sort_teams=number' +
                   '&year=' + year +
@@ -393,16 +379,11 @@ class EventTheBlueAlliancePage(webapp.RequestHandler):
   """
   def get(self):
     event = GetEvent(self)
-    if event == 'archimedes':
-      event = 'arc'
-    elif event == 'curie':
-      event = 'cur'
-    elif event == 'galileo':
-      event = 'gal'
-    elif event == 'newton':
-      event = 'new'
-    elif event == 'einstein':
-      event = 'ein'
+    if event in ['archimedes', 'curie', 'daly', 'darwin', 'galileo', 'hopper',
+        'newton', 'roebling', 'tesla', 'turing']:
+      event = event[:3]
+    elif event in ['carson', 'carver']:
+      event = event[:4]
     Redir(self, 'http://www.thebluealliance.com/event/' + GetYear(self) + event)
 
 class RegionalsPage(webapp.RequestHandler):
@@ -525,7 +506,7 @@ class CalendarPage(webapp.RequestHandler):
   Redirects the user to the FRC Calendar of Events.
   """
   def get(self):
-    Redir(self, 'http://www.firstinspires.org/node/5486')
+    Redir(self, 'http://www.firstinspires.org/robotics/frc/calendar')
 
 class CookiePage(webapp.RequestHandler):
   """
