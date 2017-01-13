@@ -457,7 +457,7 @@ class QAPage(webapp.RequestHandler):
   Redirects the user to the Q&A forum.
   """
   def get(self):
-    Redir(self, 'https://frc-qa.firstinspires.org/Questions.php')
+    Redir(self, 'https://frc-qa.firstinspires.org')
 
 class NewsPage(webapp.RequestHandler):
   """
