@@ -176,7 +176,7 @@ class AreaTeamListPage(webapp.RequestHandler):
   """
   def get(self):
     area = areaRe.findall(self.request.path)[-1]
-    Redir(self, 'https://my.usfirst.org/myarea/index.lasso?page=searchresults' +
+    Redir(self, 'https://my.firstinspires.org/myarea/index.lasso?page=searchresults' +
                   '&programs=FRC&reports=teams&sort_teams=number&results_size' +
                   '=250&omit_searchform=1&season_FRC=' + GetYear(self) +
                   '&area=' + area)
@@ -264,7 +264,7 @@ class AllTeamsPage(webapp.RequestHandler):
   Redirects the user to the list of all registered FRC teams.
   """
   def get(self):
-    Redir(self, 'https://my.usfirst.org/myarea/index.lasso?page=searchresults' +
+    Redir(self, 'https://my.firstinspires.org/myarea/index.lasso?page=searchresults' +
                   '&programs=FRC&reports=teams&sort_teams=number&results_size' +
                   '=250&omit_searchform=1&season_FRC=' + defaultYear)
 
@@ -281,7 +281,7 @@ class EventTeamListPage(webapp.RequestHandler):
     elif event in ['archimedes', 'carson', 'curie', 'daly', 'darwin', 'tesla']:
       event = 'cmpmo&division=' + event
 
-    Redir(self, 'https://my.usfirst.org/myarea/index.lasso?' +
+    Redir(self, 'https://my.firstinspires.org/myarea/index.lasso?' +
                   'page=teamlist&event_type=FRC&sort_teams=number' +
                   '&year=' + year +
                   '&event=' + event)
@@ -295,7 +295,7 @@ class EventSchedulePage(webapp.RequestHandler):
     year = GetYear(self)
 
     if int(year) >= 2015:
-      Redir(self, 'http://frc-events.usfirst.org/' + year + '/' + event +
+      Redir(self, 'http://frc-events.firstinspires.org/' + year + '/' + event +
                     '/qualifications')
     else:
       Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' +
@@ -315,7 +315,7 @@ class EventMatchResultsPage(webapp.RequestHandler):
         event = 'einstein'
 
     if int(year) >= 2015:
-      Redir(self, 'http://frc-events.usfirst.org/' + year + '/' + event +
+      Redir(self, 'http://frc-events.firstinspires.org/' + year + '/' + event +
                     '/qualifications')
     elif (year == '2007' or year == '2006' or year == '2004'):
       Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
@@ -336,7 +336,7 @@ class EventRankingsPage(webapp.RequestHandler):
     year = GetYear(self)
 
     if int(year) >= 2015:
-      Redir(self, 'http://frc-events.usfirst.org/' + year + '/' + event +
+      Redir(self, 'http://frc-events.firstinspires.org/' + year + '/' + event +
                     '/rankings')
     else:
       Redir(self, 'http://www2.usfirst.org/' + GetYear(self) + 'comp/Events/' +
@@ -356,7 +356,7 @@ class EventAwardsPage(webapp.RequestHandler):
         event = 'einstein'
 
     if int(year) >= 2015:
-      Redir(self, 'http://frc-events.usfirst.org/' + year + '/' + event +
+      Redir(self, 'http://frc-events.firstinspires.org/' + year + '/' + event +
                     '/awards')
     else:
       Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
@@ -370,8 +370,8 @@ class EventAgendaPage(webapp.RequestHandler):
     year = GetYear(self)
     event = GetEvent(self)
 
-    Redir(self, 'http://www.usfirst.org/uploadedFiles/Robotics_Programs/FRC/'
-                  + 'Events/%s/%s_%s_Agenda.pdf' % (year, year, event.upper()))
+    Redir(self, 'http://www.firstinspires.org/sites/default/files/uploads/frc/'
+                  + '/%s-events/%s_%s_Agenda.pdf' % (year, year, event.upper()))
 
 class EventTheBlueAlliancePage(webapp.RequestHandler):
   """
@@ -399,7 +399,7 @@ class ChampionshipPage(webapp.RequestHandler):
   Redirects the user to the Championship Event page.
   """
   def get(self):
-    Redir(self, 'http://championship.usfirst.org')
+    Redir(self, 'http://firstchampionship.org')
 
 class DistrictRankingsPage(webapp.RequestHandler):
   """
@@ -407,7 +407,7 @@ class DistrictRankingsPage(webapp.RequestHandler):
   """
   def get(self):
     district = GetEvent(self)
-    Redir(self, 'http://frc-districtrankings.usfirst.org/' + defaultYear + '/' + district)
+    Redir(self, 'http://frc-districtrankings.firstinspires.org/' + defaultYear + '/' + district)
 
 class DocumentsPage(webapp.RequestHandler):
   """
@@ -478,21 +478,21 @@ class TIMSPage(webapp.RequestHandler):
   Redirects the user to the FRC Team Information Management System (TIMS).
   """
   def get(self):
-    Redir(self, 'https://my.usfirst.org/frc/tims/site.lasso')
+    Redir(self, 'https://my.firstinspires.org/frc/tims/site.lasso')
 
 class STIMSPage(webapp.RequestHandler):
   """
   Redirects the user to the Student Team Information Member System (TIMS).
   """
   def get(self):
-    Redir(self, 'https://my.usfirst.org/stims/site.lasso')
+    Redir(self, 'https://my.firstinspires.org/stims/site.lasso')
 
 class VIMSPage(webapp.RequestHandler):
   """
   Redirects the user to the Volunteer Information & Matching System (VIMS).
   """
   def get(self):
-    Redir(self, 'https://my.usfirst.org/FIRSTPortal/Login/VIMS_Login.aspx')
+    Redir(self, 'https://my.firstinspires.org/FIRSTPortal/Login/VIMS_Login.aspx')
 
 class KickoffPage(webapp.RequestHandler):
   """
