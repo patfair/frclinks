@@ -29,6 +29,7 @@ FIRST website's use of non-memorable URLs and lack of ease of navigation.
 import json
 import os
 import re
+import time
 import urllib
 
 from google.appengine.api import urlfetch
@@ -73,6 +74,8 @@ frcUrl = 'http://www.firstinspires.org/robotics/frc/'
 
 documentsYears = {'default':'http://www.firstinspires.org/node/5331',
                   defaultYear:frcUrl + 'game-manual-and-qa-system'}
+
+lastScrapeTime = None
 
 # Pre-compute the event list for the instructions page.
 eventList = json.load(open("events.json"))
@@ -133,9 +136,11 @@ def GetTpid(handler):
     # Try checking the datastore for the team's most recent tpid.
     tpid = LookupTeam(team)
 
-    if not tpid:
+    global lastScrapeTime
+    if not tpid and (lastScrapeTime is None or time.time() - lastScrapeTime > 3600):
       # Otherwise, try scraping the FIRST website for the current season's tpid.
       tpid = ScrapeTeam(team, defaultYear)
+      lastScrapeTime = time.time()
 
     return tpid
 
