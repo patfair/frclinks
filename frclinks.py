@@ -572,6 +572,17 @@ class ReferrerRedirectPage(webapp.RequestHandler):
     self.response.out.write(template.render(
         'templates/redirect.html', { 'url' : self.request.get('url'), }))
 
+class BlacklistMiddleware(object):
+  def __init__(self, app):
+    self.app = app
+
+  def __call__(self, environ, start_response):
+    user_agent = environ.get('HTTP_USER_AGENT', '')
+    if 'GoogleDocs; apps-spreadsheets;' in user_agent:
+      start_response('403 Forbidden', [])
+      return ['This user is banned.']
+    return self.app(environ, start_response)
+
 # The mapping of URLs to handlers. For some reason, regular expressions that
 # use parentheses (e.g. '(championship|cmp|c)') cause an error, so some
 # duplication exists.
@@ -668,7 +679,7 @@ application = webapp.WSGIApplication([
   debug=True)
 
 def main():
-  run_wsgi_app(application)
+  run_wsgi_app(BlacklistMiddleware(application))
 
 if __name__ == "__main__":
   main()
