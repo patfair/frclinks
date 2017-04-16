@@ -254,7 +254,14 @@ class TeamTheBlueAlliancePage(webapp.RequestHandler):
     team, year = blueAllianceRe.findall(self.request.path)[-1]
     if len(year) == 0:
       year = defaultYear
-    Redir(self, 'http://www.thebluealliance.com/team/%s/%s' % (team, year))
+    Redir(self, 'https://www.thebluealliance.com/team/%s/%s' % (team, year))
+
+class TheBlueAlliancePage(webapp.RequestHandler):
+  """
+  Redirects the user to the The Blue Alliance homepage.
+  """
+  def get(self):
+    Redir(self, 'https://www.thebluealliance.com')
 
 class TeamChiefDelphiMediaPage(webapp.RequestHandler):
   """
@@ -389,7 +396,7 @@ class EventTheBlueAlliancePage(webapp.RequestHandler):
       event = event[:3]
     elif event in ['carson', 'carver']:
       event = event[:4]
-    Redir(self, 'http://www.thebluealliance.com/event/' + GetYear(self) + event)
+    Redir(self, 'https://www.thebluealliance.com/event/' + GetYear(self) + event)
 
 class RegionalsPage(webapp.RequestHandler):
   """
@@ -600,6 +607,7 @@ application = webapp.WSGIApplication([
     (r'/(?i)m/\d+/?', TeamMapPage),
     (r'/(?i)tba/\d+/\d{4}/?', TeamTheBlueAlliancePage),
     (r'/(?i)tba/\d+/?', TeamTheBlueAlliancePage),
+    (r'/(?i)tba/?', TheBlueAlliancePage),
     (r'/(?i)cdm/\d+/?', TeamChiefDelphiMediaPage),
     (r'/(?i)teams?/?', AllTeamsPage),
     (r'/(?i)t/?', AllTeamsPage),
