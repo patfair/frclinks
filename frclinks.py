@@ -67,7 +67,7 @@ sectionRe = re.compile(r'/([iagrt])')
 sessionRe = re.compile(r'session=myarea:([A-Za-z0-9]+)')
 
 # Year to default to for event information if none is provided.
-defaultYear = '2017'
+defaultYear = '2018'
 
 # Base url for many FRC pages.
 frcUrl = 'http://www.firstinspires.org/robotics/frc/'
