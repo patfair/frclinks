@@ -306,7 +306,7 @@ class EventSchedulePage(webapp.RequestHandler):
     event = GetEvent(self)
     year = GetYear(self)
 
-    if int(year) >= 2015:
+    if int(year) >= 2006:
       Redir(self, 'http://frc-events.firstinspires.org/' + year + '/' + event +
                     '/qualifications')
     else:
@@ -326,10 +326,10 @@ class EventMatchResultsPage(webapp.RequestHandler):
       if year == '2005' or year == '2006' or year == '2008':
         event = 'einstein'
 
-    if int(year) >= 2015:
+    if int(year) >= 2006:
       Redir(self, 'http://frc-events.firstinspires.org/' + year + '/' + event +
                     '/qualifications')
-    elif (year == '2007' or year == '2006' or year == '2004'):
+    elif (year == '2004'):
       Redir(self, 'http://www2.usfirst.org/' + year + 'comp/Events/' + event
                     + '/matches.html')
     elif year == '2003':
@@ -347,7 +347,7 @@ class EventRankingsPage(webapp.RequestHandler):
     event = GetEvent(self)
     year = GetYear(self)
 
-    if int(year) >= 2015:
+    if int(year) >= 2006:
       Redir(self, 'http://frc-events.firstinspires.org/' + year + '/' + event +
                     '/rankings')
     else:
@@ -367,7 +367,7 @@ class EventAwardsPage(webapp.RequestHandler):
       if year == '2005' or year == '2006' or year == '2008':
         event = 'einstein'
 
-    if int(year) >= 2015:
+    if int(year) >= 2006:
       Redir(self, 'http://frc-events.firstinspires.org/' + year + '/' + event +
                     '/awards')
     else:
