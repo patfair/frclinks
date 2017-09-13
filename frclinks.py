@@ -404,7 +404,7 @@ class RegionalsPage(webapp.RequestHandler):
   """
   def get(self):
     # TODO: Replace with an official page if one ever manifests.
-    Redir(self, 'http://173.255.246.196/' + defaultYear)
+    Redir(self, 'https://frc-events.firstinspires.org/{0}/events'.format(defaultYear))
 
 class ChampionshipPage(webapp.RequestHandler):
   """
